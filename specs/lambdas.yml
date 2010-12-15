@@ -5,6 +5,7 @@ tests:
       lambda: !code
         ruby: 'proc { "world" }'
         perl: 'sub { "world" }'
+        php:  'return "world";'
     template: "Hello, {{lambda}}!"
     expected: "Hello, world!"
 
@@ -15,6 +16,7 @@ tests:
       lambda: !code
         ruby: 'proc { "{{planet}}" }'
         perl: 'sub { "{{planet}}" }'
+        php:  'return "{{planet}}";'
     template: "Hello, {{lambda}}!"
     expected: "Hello, world!"
 
@@ -24,6 +26,7 @@ tests:
       lambda: !code
         ruby: 'proc { $calls ||= 0; $calls += 1 }'
         perl: 'sub { no strict; $calls += 1 }'
+        php:  'global $intLambdaCalls; return ++$intLambdaCalls;'
     template: '{{lambda}} == {{{lambda}}} == {{lambda}}'
     expected: '1 == 1 == 1'
 
@@ -33,6 +36,7 @@ tests:
       lambda: !code
         ruby: 'proc { ">" }'
         perl: 'sub { ">" }'
+        php:  'return ">";'
     template: "<{{lambda}}{{{lambda}}}"
     expected: "<&gt;>"
 
@@ -43,6 +47,7 @@ tests:
       lambda: !code
         ruby: 'proc { |text| text == "{{x}}" ? "yes" : "no" }'
         perl: 'sub { $_[0] eq "{{x}}" ? "yes" : "no" }'
+        php:  'return ($text == "{{x}}") ? "yes" : "no";'
     template: "<{{#lambda}}{{x}}{{/lambda}}>"
     expected: "<yes>"
 
@@ -53,6 +58,7 @@ tests:
       lambda: !code
         ruby: 'proc { |text| "#{text}{{planet}}#{text}" }'
         perl: 'sub { $_[0] . "{{planet}}" . $_[0] }'
+        php:  'return $text . "{{planet}}" . $text;'
     template: "<{{#lambda}}-{{/lambda}}>"
     expected: "<-Earth->"
 
@@ -63,5 +69,6 @@ tests:
       lambda: !code
         ruby: 'proc { |text| text }'
         perl: 'sub { shift }'
+        php:  'return $text'
     template: "<{{^lambda}}{{static}}{{/lambda}}>"
     expected: "<>"
