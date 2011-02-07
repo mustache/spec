@@ -5,6 +5,12 @@ tests:
     template: '"{{#boolean}}This should be rendered.{{/boolean}}"'
     expected: '"This should be rendered."'
 
+  - name: Truthy - Strings
+    desc: Truthy strings sections should have their contents rendered.
+    data: { string: "rendered" }
+    template: '"{{#string}}This should be {{string}}.{{/string}}"'
+    expected: '"This should be rendered."'
+
   - name: Falsey
     desc: Falsey sections should have their contents omitted.
     data: { boolean: false }

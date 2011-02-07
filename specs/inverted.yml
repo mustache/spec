@@ -17,6 +17,12 @@ tests:
     template: '"{{^boolean}}This should not be rendered.{{/boolean}}"'
     expected: '""'
 
+  - name: Truthy - Strings
+    desc: Truthy strings sections should have their contents omitted.
+    data: { string: "rendered" }
+    template: '"{{#string}}This should not be {{string}}.{{/string}}"'
+    expected: '""'
+
   - name: Context
     desc: Objects and hashes should behave like truthy values.
     data: { context: { name: 'Joe' } }
