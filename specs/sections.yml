@@ -11,6 +11,12 @@ tests:
     template: '"{{#string}}This should be {{string}}.{{/string}}"'
     expected: '"This should be rendered."'
 
+  - name: Truthy - Numbers
+    desc: Truthy numbers sections should have their contents rendered.
+    data: { number: 1 }
+    template: '"{{#number}}This should be {{number}}.{{/number}}"'
+    expected: '"This should be 1."'
+
   - name: Falsey
     desc: Falsey sections should have their contents omitted.
     data: { boolean: false }

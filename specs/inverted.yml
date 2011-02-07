@@ -23,6 +23,12 @@ tests:
     template: '"{{#string}}This should not be {{string}}.{{/string}}"'
     expected: '""'
 
+  - name: Truthy - Numbers
+    desc: Truthy numbers sections should have their contents omitted.
+    data: { number: 1 }
+    template: '"{{#number}}This should not be {{number}}.{{/number}}"'
+    expected: '""'
+
   - name: Context
     desc: Objects and hashes should behave like truthy values.
     data: { context: { name: 'Joe' } }
