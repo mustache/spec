@@ -5,6 +5,12 @@ tests:
     template: '"{{^boolean}}This should be rendered.{{/boolean}}"'
     expected: '"This should be rendered."'
 
+  - name: Null
+    desc: Null sections should have their contents rendered.
+    data: { boolean: null }
+    template: '"{{^boolean}}This should be rendered.{{/boolean}}"'
+    expected: '"This should be rendered."'
+
   - name: Truthy
     desc: Truthy sections should have their contents omitted.
     data: { boolean: true }

@@ -11,6 +11,12 @@ tests:
     template: '"{{#boolean}}This should not be rendered.{{/boolean}}"'
     expected: '""'
 
+  - name: Null
+    desc: Null sections should have their contents omitted.
+    data: { boolean: null }
+    template: '"{{#boolean}}This should not be rendered.{{/boolean}}"'
+    expected: '""'
+
   - name: Context
     desc: Objects and hashes should be pushed onto the context stack.
     data: { context: { name: 'Joe' } }
