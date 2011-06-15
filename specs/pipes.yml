@@ -1,0 +1,46 @@
+overview: |
+  Pipe tags represent context items that should be rendered as JSON.
+  The tags content may contain the name of any context which is 
+  renderable as JSON.
+
+  Pipe tags should follow the same name resolution rules as sections
+  to determine the appropriate context to render as JSON.
+
+  Pipe tags SHOULD be treated as standalone when appropriate.
+tests:
+  - name: Pipe tags - Objects and Hashes
+    desc: Pipe tags should render objects and hashes as JSON objects.
+    data: { foo: { bar: "baz" } }
+    template: 'var data = {{|foo}};'
+    expected: 'var data = {"bar":"baz"};'
+
+  - name: Pipe tags - Strings
+    desc: Pipe tags should render strings as a list of strings.
+    data: { foo: "bar" }
+    template: 'var data = {{|foo}};'
+    expected: 'var data = ["bar"];'
+
+  - name: Pipe tags - Lists
+    desc: Pipe tags should render lists as lists.
+    data: { foo: [ { bar: "baz" }, { bar: "fight" } ] }
+    template: 'var data = {{|foo}};'
+    expected: 'var data = [{ bar: "baz" }, { bar: "fight" }];'
+
+  - name: Pipe tags - Falsy
+    desc: Pipe tags should render false values as empty lists.
+    data: { foo: false }
+    template: 'var data = {{|foo}};'
+    expected: 'var data = [];'
+
+  - name: Pipe tags - Unrenderables
+    desc: Pipe tags should render unrenderable items as empty lists.
+    data:
+      lambda: !code
+        ruby:    'proc { "world" }'
+        perl:    'sub { "world" }'
+        js:      'function() { return "world" }'
+        php:     'return "world";'
+        python:  'lambda: "world"'
+        clojure: '(fn [] "world")'
+    template: 'var data = {{|lambda}};'
+    expected: 'var data = [];'
