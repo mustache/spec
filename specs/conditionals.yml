@@ -54,7 +54,8 @@ tests:
   - name: When should not iterate
     desc: When is not a section
     data:
-      { list: [ { item: 1 }, { item: 2 }, { item: 3 } ], item: 'item' }
+      list: [ { item: 1 }, { item: 2 }, { item: 3 } ]
+      item: 'item'
     template: '{{?list}}{{item}}{{/list}}'
     expected: 'item'
 
