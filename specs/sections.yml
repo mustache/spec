@@ -41,6 +41,12 @@ tests:
     template: '"{{#boolean}}This should not be rendered.{{/boolean}}"'
     expected: '""'
 
+  - name: Non-interpolation
+    desc: Rendered section output should not be interpolated.
+    data: { section: true, template: '{{planet}}', planet: 'Earth' }
+    template: '{{#section}}{{template}}{{/section}}: {{planet}}'
+    expected: '{{planet}}: Earth'
+
   - name: Context
     desc: Objects and hashes should be pushed onto the context stack.
     data: { context: { name: 'Joe' } }
