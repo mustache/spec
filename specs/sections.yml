@@ -47,6 +47,12 @@ tests:
     template: '"{{#context}}Hi {{name}}.{{/context}}"'
     expected: '"Hi Joe."'
 
+  - name: Context Precedence
+    desc: The context stack should be walked from top to bottom.
+    data: { entree: 'chicken', vegetarian: { entree: 'rice and beans' } }
+    template: '{{entree}} : {{#vegetarian}}{{entree}}{{/vegetarian}}'
+    expected: 'chicken : rice and beans'
+
   - name: Deeply Nested Contexts
     desc: All elements on the context stack should be accessible.
     data:
