@@ -107,6 +107,18 @@ tests:
     template: "<{{#lambda}}-{{/lambda}}>"
     expected: "<-Earth->"
 
+  - name: Section - Expansion of List Elements
+    desc: Lambdas used for sections in a list should each have their results parsed.
+    data:
+      planet: "Earth"
+      lambdas:
+        - !code
+          python:  'lambda text: "~{{%s}}~" % text'
+        - !code
+          python:  'lambda text: "#{{%s}}#" % text'
+    template: "<{{#lambdas}}planet{{/lambdas}}>"
+    expected: "<~Earth~#Earth#>"
+
   - name: Section - Context Stack
     desc: |
       Lambdas used for sections should not be pushed onto the context
