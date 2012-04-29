@@ -123,11 +123,11 @@ tests:
     desc: The lambda return value should not be re-interpolated.
     data:
       planet: "Earth"
-      dot: "{{.}}"
+      dot: "#{{.}}#"
       lambda: !code
-        python: 'lambda text: "{{%s}}" % text'
+        python: 'lambda text: "~{{%s}}~" % text'
     template: "<{{#planet}}{{#lambda}}dot{{/lambda}}{{/planet}}>"
-    expected: "<{{.}}>"
+    expected: "<~#{{.}}#~>"
 
   - name: Section - Alternate Delimiters
     desc: Lambdas used for sections should parse with the current delimiters.
