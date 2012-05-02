@@ -5,9 +5,14 @@ overview: |
   These tags' content MUST be a non-whitespace character sequence NOT
   containing the current closing delimiter; each Section tag MUST be followed
   by an End Section tag with the same content within the same section.
+  
+  Special section tags do not contain content referring to a context and 
+  therefore do no require name resolution:
+    1) If the name is "!", the section is a comment block.
+    2) If the name is "`", the section is a literal block.
 
-  This tag's content names the data to replace the tag.  Name resolution is as
-  follows:
+  Regular section tags contain content referring to the context which should 
+  be used to replace the tag. Name resolution should progress as follows:
     1) Split the name on periods; the first part is the name to resolve, any
     remaining parts should be retained.
     2) Walk the context stack from top to bottom, finding the first context
@@ -254,3 +259,62 @@ tests:
     data: { boolean: true }
     template: '|{{# boolean }}={{/ boolean }}|'
     expected: '|=|'
+
+  # Comment Sections
+
+  - name: Comment Sections - Single Line
+    desc: Comment Sections should not render their contents.
+    data: { }
+    template: '{{#!}}Over {{/!}}Here'
+    expected: 'Here'
+
+  - name: Comment Sections - Ignore Tags
+    desc: Comment Sections should ignore tags within their contents.
+    data: { bro: "dawg" }
+    template: "{{#!}}Don't render me, {{bro}}.{{/!}}"
+    expected: ""
+
+  - name: Comment Sections - Multi Line
+    desc: Comment Sections should not render their contents.
+    data: { }
+    template: |
+      | This Is
+        {{#!}}
+      Not
+        {{/!}}
+      | A Line
+    expected: |
+      | This Is
+      | A Line
+
+  # Literal Sections
+
+  - name: Literal Sections - Single Line
+    desc: Literal Sections should not render their contents.
+    data: { }
+    template: '{{#`}}Over {{/`}}Here'
+    expected: 'Over Here'
+
+  - name: Literal Sections - Ignore Tags
+    desc: Literal Sections should ignore tags within their contents.
+    data: { bro: "dawg" }
+    template: "{{#`}}Don't render me, {{bro}}.{{/`}}"
+    expected: "Don't render me, {{bro}}."
+
+  - name: Literal Sections - Multi Line
+    desc: Literal Sections should not render their contents.
+    data: { foo: { bar: "baz" } }
+    template: |
+      | var template = "
+        {{#`}}
+      | {{#foo}}
+      |   {{bar}}
+      | {{/foo}}
+        {{/`}}
+      | ";
+    expected: |
+      | var template = "
+      | {{#foo}}
+      |   {{bar}}
+      | {{/foo}}
+      | ";
