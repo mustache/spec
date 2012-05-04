@@ -119,6 +119,17 @@ tests:
     template: "<{{#lambdas}}planet{{/lambdas}}>"
     expected: "<~Earth~#Earth#>"
 
+  - name: Section - Mixed Lists
+    desc: Sections should permit mixed lists of lambdas and non-lambdas.
+    data:
+      planet: "Earth"
+      lambdas:
+        - !code
+          python:  'lambda text: "~{{%s}}~" % text'
+        - 1
+    template: "<{{#lambdas}}planet{{/lambdas}}>"
+    expected: "<~Earth~planet>"
+
   - name: Section - Context Stack
     desc: |
       Lambdas used for sections should not be pushed onto the context
