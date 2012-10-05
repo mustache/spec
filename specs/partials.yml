@@ -107,3 +107,40 @@ tests:
     template: "|{{> partial }}|"
     partials: { partial: "[]" }
     expected: '|[]|'
+
+  # Partial name parsing
+  - name: Partial names: numbers
+    desc: Partial names can include numbers
+    data: { text: 'content' }
+    template: '"{{>partial5name}}"'
+    partials: { 'partial5name': '*{{text}}*' }
+    expected: '"*content*"'
+
+  - name: Partial names: hyphen
+    desc: Partial names can include hyphens
+    data: { text: 'content' }
+    template: '"{{>partial-name}}"'
+    partials: { 'partial-name': '*{{text}}*' }
+    expected: '"*content*"'
+
+  - name: Partial names: underscore
+    desc: Partial names can include underscores
+    data: { text: 'content' }
+    template: '"{{>partial_name}}"'
+    partials: { 'partial_name': '*{{text}}*' }
+    expected: '"*content*"'
+
+  - name: Partial names: colon
+    desc: Partial names can include colons
+    data: { text: 'content' }
+    template: '"{{>partial:name}}"'
+    partials: { 'partial:name': '*{{text}}*' }
+    expected: '"*content*"'
+
+  - name: Partial names: caret
+    desc: Partial names can include carets
+    data: { text: 'content' }
+    template: '"{{>partial^name}}"'
+    partials: { 'partial^name': '*{{text}}*' }
+    expected: '"*content*"'
+
