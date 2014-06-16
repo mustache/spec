@@ -19,8 +19,10 @@ namespace :build do
       json_file = filename.gsub('.yml', '.json')
 
       File.open(json_file, 'w') do |file|
-        doc = YAML.load_file(filename)
-        file << doc.merge(:__ATTN__ => note).to_json()
+        doc = YAML.load_file(filename).to_json()
+        # Splice notice into the JSON text to ensure it is visible at the top
+        doc.insert(1, "\"__ATTN__\":\"#{note}\",");
+        file << doc
       end
     end
   end
