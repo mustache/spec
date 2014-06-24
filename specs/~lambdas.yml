@@ -17,6 +17,7 @@ tests:
     data:
       lambda: !code
         ruby:    'proc { "world" }'
+        perl6:   'sub { "world" }'
         perl:    'sub { "world" }'
         js:      'function() { return "world" }'
         php:     'return "world";'
@@ -31,6 +32,7 @@ tests:
       planet: "world"
       lambda: !code
         ruby:    'proc { "{{planet}}" }'
+        perl6:   'sub { q+{{planet}}+ }'
         perl:    'sub { "{{planet}}" }'
         js:      'function() { return "{{planet}}" }'
         php:     'return "{{planet}}";'
@@ -45,6 +47,7 @@ tests:
       planet: "world"
       lambda: !code
         ruby:    'proc { "|planet| => {{planet}}" }'
+        perl6:   'sub { q+|planet| => {{planet}}+ }'
         perl:    'sub { "|planet| => {{planet}}" }'
         js:      'function() { return "|planet| => {{planet}}" }'
         php:     'return "|planet| => {{planet}}";'
@@ -58,6 +61,7 @@ tests:
     data:
       lambda: !code
         ruby:    'proc { $calls ||= 0; $calls += 1 }'
+        perl6:   'sub { state $calls += 1 }'
         perl:    'sub { no strict; $calls += 1 }'
         js:      'function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }'
         php:     'global $calls; return ++$calls;'
@@ -71,6 +75,7 @@ tests:
     data:
       lambda: !code
         ruby:    'proc { ">" }'
+        perl6:   'sub { ">" }'
         perl:    'sub { ">" }'
         js:      'function() { return ">" }'
         php:     'return ">";'
@@ -85,6 +90,7 @@ tests:
       x: 'Error!'
       lambda: !code
         ruby:    'proc { |text| text == "{{x}}" ? "yes" : "no" }'
+        perl6:   'sub { $^section eq q+{{x}}+ ?? "yes" !! "no" }'
         perl:    'sub { $_[0] eq "{{x}}" ? "yes" : "no" }'
         js:      'function(txt) { return (txt == "{{x}}" ? "yes" : "no") }'
         php:     'return ($text == "{{x}}") ? "yes" : "no";'
@@ -99,6 +105,7 @@ tests:
       planet: "Earth"
       lambda: !code
         ruby:    'proc { |text| "#{text}{{planet}}#{text}" }'
+        perl6:   'sub { $^section ~ q+{{planet}}+ ~ $^section }'
         perl:    'sub { $_[0] . "{{planet}}" . $_[0] }'
         js:      'function(txt) { return txt + "{{planet}}" + txt }'
         php:     'return $text . "{{planet}}" . $text;'
@@ -113,6 +120,7 @@ tests:
       planet: "Earth"
       lambda: !code
         ruby:    'proc { |text| "#{text}{{planet}} => |planet|#{text}" }'
+        perl6:   'sub { $^section ~ q+{{planet}} => |planet|+ ~ $^section }'
         perl:    'sub { $_[0] . "{{planet}} => |planet|" . $_[0] }'
         js:      'function(txt) { return txt + "{{planet}} => |planet|" + txt }'
         php:     'return $text . "{{planet}} => |planet|" . $text;'
@@ -126,6 +134,7 @@ tests:
     data:
       lambda: !code
         ruby:    'proc { |text| "__#{text}__" }'
+        perl6:   'sub { "__" ~ $^section ~ "__" }'
         perl:    'sub { "__" . $_[0] . "__" }'
         js:      'function(txt) { return "__" + txt + "__" }'
         php:     'return "__" . $text . "__";'
@@ -140,6 +149,7 @@ tests:
       static: 'static'
       lambda: !code
         ruby:    'proc { |text| false }'
+        perl6:   'sub { 0 }'
         perl:    'sub { 0 }'
         js:      'function(txt) { return false }'
         php:     'return false;'
