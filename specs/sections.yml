@@ -161,6 +161,13 @@ tests:
     template: '"{{#list}}({{.}}){{/list}}"'
     expected: '"(1.1)(2.2)(3.3)(4.4)(5.5)"'
 
+  - name: Implicit Iterator - Array
+    desc: Implicit iterators should allow iterating over nested arrays.
+    data:
+      list: [ [1, 2, 3], ['a', 'b', 'c'] ]
+    template: '"{{#list}}({{#.}}{{.}}{{/.}}){{/list}}"'
+    expected: '"(123)(abc)"'
+
   # Dotted Names
 
   - name: Dotted Names - Truthy
