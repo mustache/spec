@@ -22,7 +22,7 @@ namespace :build do
         doc = YAML.load_file(filename).to_json()
         # Splice notice into the JSON text to ensure it is visible at the top
         doc.insert(1, "\"__ATTN__\":\"#{note}\",");
-        file << doc
+        file << doc << "\n"
       end
     end
   end
