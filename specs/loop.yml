@@ -1,0 +1,128 @@
+overview: |
+
+  Loop tags are used to loop over an array, without lambda evaluation
+  or testing for truthyness or pushing new hash context frames (hashes
+  in the array however are pushed).
+
+  Loop tags SHOULD be treated as standalone when
+  appropriate.
+tests:
+  - name: Loop over an empty array
+    desc: Loop over an empty array should not evaluate contents
+    data: { array: [] }
+    template: '{{,array}}This should not be rendered.{{/array}}'
+    expected: ''
+
+  - name: Loop immediate
+    desc: Loop over an array with immediate values
+    data: { array: [ 1, 2, 3 ] }
+    template: '{{,array}}{{.}} {{/array}}'
+    expected: '1 2 3 '
+    
+  - name: Loop hash
+    desc: Loop over an array with hashes
+    data: { array: [ { item: 1 }, { item: 2 }, { item: 3 } ] }
+    template: '{{,array}}{{item}} {{/array}}'
+    expected: '1 2 3 '
+
+  - name: Loop single
+    desc: Loop over a hash should not push a new context
+    data:
+      a: 'first'
+      array:
+        a: 1
+        b: 2
+        c: 3
+    template: '{{,array}}{{a}} {{/array}}'
+    expected: 'first first first '
+
+  - name: Nested loops single
+    desc: Loop over a hash should not push a new context
+    data:
+      a: 'first'
+      array:
+        a: 1
+        b: 2
+        c: 3
+    template: '{{,array}}{{a}} {{/array}}'
+    expected: 'first first first '
+
+  - name: Context Misses
+    desc: Context misses should be considered as an empty array
+    data: { }
+    template: '{{,missing}}foobar{{/missing}}'
+    expected: ''
+    
+  # Whitespace Sensitivy
+  - name: Surrounding Whitespace
+    desc: Loops should not alter surrounding whitespace.
+    data: { array: [ 1 ] }
+    template: " | {{,array}}\t|\t{{/array}} | \n"
+    expected: " | \t|\t | \n"
+
+  - name: Internal Whitespace
+    desc: Loops should not alter internal whitespace.
+    data: { array: [ 1 ] }
+    template: " | {{,array}} {{! Important Whitespace }}\n {{/array}} | \n"
+    expected: " |  \n  | \n"
+
+  - name: Indented Inline Sections
+    desc: Single-line Loops should not alter surrounding whitespace.
+    data: { array: [ 1 ] }
+    template: " {{,array}}YES{{/array}}\n {{,array}}GOOD{{/array}}\n"
+    expected: " YES\n GOOD\n"
+
+  - name: Standalone Lines
+    desc: Standalone lines should be removed from the template.
+    data: { array: [ 1 ] }
+    template: |
+      | This Is
+      {{,array}}
+      |
+      {{/array}}
+      | A Line
+    expected: |
+      | This Is
+      |
+      | A Line
+
+  - name: Indented Standalone Lines
+    desc: Indented standalone lines should be removed from the template.
+    data: { array: [ 1 ] }
+    template: |
+      | This Is
+        {{,array}}
+      |
+        {{/array}}
+      | A Line
+    expected: |
+      | This Is
+      |
+      | A Line
+
+  - name: Standalone Line Endings
+    desc: '"\r\n" should be considered a newline for standalone tags.'
+    data: { array: [ 1 ] }
+    template: "|\r\n{{,array}}\r\n{{/array}}\r\n|"
+    expected: "|\r\n|"
+
+  - name: Standalone Without Previous Line
+    desc: Standalone tags should not require a newline to precede them.
+    data: { array: [ 1 ] }
+    template: "  {{,array}}\n#{{/array}}\n/"
+    expected: "#\n/"
+
+  - name: Standalone Without Newline
+    desc: Standalone tags should not require a newline to follow them.
+    data: { array: [ 1 ] }
+    template: "#{{,array}}\n/\n  {{/array}}"
+    expected: "#\n/\n"
+
+  # Whitespace Insensitivity
+
+  - name: Padding
+    desc: Superfluous in-tag whitespace should be ignored.
+    data: { array: [ 1 ] }
+    template: '|{{, array }}={{/ array }}|'
+    expected: '|=|'
+  
