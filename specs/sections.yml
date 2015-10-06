@@ -57,14 +57,16 @@ tests:
     desc: All elements on the context stack should be accessible within lists.
     data:
       tops:
-        - tname: "A"
+        - tname:
+            upper: "A"
+            lower: "a"
           middles:
             - mname: "1"
               bottoms: 
-                - bname: "a"
-                - bname: "b"
-    template: '{{#tops}}{{#middles}}{{tname}}{{mname}}.{{#bottoms}}{{tname}}{{mname}}{{bname}}.{{/bottoms}}{{/middles}}{{/tops}}'
-    expected: 'A1.A1a.A1b.'
+                - bname: "x"
+                - bname: "y"
+    template: '{{#tops}}{{#middles}}{{tname.lower}}{{mname}}.{{#bottoms}}{{tname.upper}}{{mname}}{{bname}}.{{/bottoms}}{{/middles}}{{/tops}}'
+    expected: 'a1.A1x.A1y.'
 
   - name: Deeply Nested Contexts
     desc: All elements on the context stack should be accessible.
