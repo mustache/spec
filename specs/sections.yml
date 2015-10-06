@@ -63,13 +63,8 @@ tests:
               bottoms: 
                 - bname: "a"
                 - bname: "b"
-    template: |
-      {{#tops}}{{#middles}}{{#bottoms}} 
-      {{tname}}{{mname}}{{bname}}
-      {{/bottoms}}{{/middles}}{{/tops}}
-    expected: |
-      A1a
-      A1b
+    template: '{{#tops}}{{#middles}}{{#bottoms}}{{tname}}{{mname}}{{bname}}.{{/bottoms}}{{/middles}}{{/tops}}'
+    expected: 'A1a.A1b.'
 
   - name: Deeply Nested Contexts
     desc: All elements on the context stack should be accessible.
