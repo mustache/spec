@@ -53,14 +53,27 @@ tests:
     template: '"{{#context}}Hi {{name}}.{{/context}}"'
     expected: '"Hi Joe."'
 
+  - name: Parent contexts
+    desc: Names missing in the current context are looked up in the stack.
+    data: { a: "foo", b: "wrong", sec: { b: "bar" }, c : { d : "baz" } }
+    template: '"{{#sec}}{{a}}, {{b}}, {{c.d}}{{/sec}}"'
+    expected: '"foo, bar, baz"'
+
+  - name: Variable test
+    desc: |
+      Non-false sections have their value at the top of context,
+      accessible as {{.}} or through the parent context. This gives
+      a simple way to display content conditionally if a variable exists.
+    data: { foo: "bar" }
+    template: '"{{#foo}} {{.}} is {{foo}} {{/foo}}"'
+    expected: '"bar is bar"'
+
   - name: Deeply Nested Contexts
     desc: All elements on the context stack should be accessible.
     data:
       a: { one: 1 }
       b: { two: 2 }
-      c: { three: 3 }
-      d: { four: 4 }
-      e: { five: 5 }
+      c: { three: 3, d : { four : 4, five : 5 } }
     template: |
       {{#a}}
       {{one}}
@@ -70,9 +83,11 @@ tests:
       {{one}}{{two}}{{three}}{{two}}{{one}}
       {{#d}}
       {{one}}{{two}}{{three}}{{four}}{{three}}{{two}}{{one}}
-      {{#e}}
+      {{#five}}
       {{one}}{{two}}{{three}}{{four}}{{five}}{{four}}{{three}}{{two}}{{one}}
-      {{/e}}
+      {{one}}{{two}}{{three}}{{four}}{{.}}6{{.}}{{four}}{{three}}{{two}}{{one}}
+      {{one}}{{two}}{{three}}{{four}}{{five}}{{four}}{{three}}{{two}}{{one}}
+      {{/five}}
       {{one}}{{two}}{{three}}{{four}}{{three}}{{two}}{{one}}
       {{/d}}
       {{one}}{{two}}{{three}}{{two}}{{one}}
@@ -86,6 +101,8 @@ tests:
       121
       12321
       1234321
+      123454321
+      12345654321
       123454321
       1234321
       12321
