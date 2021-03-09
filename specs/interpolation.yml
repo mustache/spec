@@ -2,7 +2,8 @@ overview: |
   Interpolation tags are used to integrate dynamic content into the template.
 
   The tag's content MUST be a non-whitespace character sequence NOT containing
-  the current closing delimiter.
+  the current closing delimiter. Leading and trailing whitespace are permitted
+  between the opening and closing delimiters.
 
   This tag's content names the data to replace the tag.  A single period (`.`)
   indicates that the item currently sitting atop the context stack should be
