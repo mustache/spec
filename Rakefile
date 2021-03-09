@@ -19,8 +19,9 @@ namespace :build do
       json_file = filename.gsub('.yml', '.json')
 
       File.open(json_file, 'w') do |file|
+        warning = {:__ATTN__ => note}
         doc = YAML.load_file(filename)
-        file << doc.merge(:__ATTN__ => note).to_json()
+        file << warning.merge(doc).to_json()
       end
     end
   end
