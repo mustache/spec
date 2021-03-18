@@ -65,7 +65,7 @@ tests:
       accessible as {{.}} or through the parent context. This gives
       a simple way to display content conditionally if a variable exists.
     data: { foo: "bar" }
-    template: '"{{#foo}} {{.}} is {{foo}} {{/foo}}"'
+    template: '"{{#foo}}{{.}} is {{foo}}{{/foo}}"'
     expected: '"bar is bar"'
 
   - name: List Contexts
