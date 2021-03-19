@@ -21,7 +21,7 @@ namespace :build do
       File.open(json_file, 'w') do |file|
         warning = {:__ATTN__ => note}
         doc = YAML.load_file(filename)
-        file << warning.merge(doc).to_json()
+        file << JSON.pretty_generate(warning.merge(doc)) << "\n"
       end
     end
   end
