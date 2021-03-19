@@ -14,9 +14,9 @@ In general, the process for each `.yml` file is as follows:
   2. If your implementation will not support lambdas, feel free to skip over
      the optional '~lambdas.yml' file.
 
-  2.1. If your implementation will support lambdas, ensure that each member of
-       'data' tagged with '!code' is properly processed into a language-
-       specific lambda reference.
+  2.1. If your implementation will support lambdas, ensure that the `lambda`
+       member of `data` (tagged with `!code`) is properly processed into a
+       language-specific lambda reference.
 
       *   e.g. Given this YAML data hash:
 
@@ -30,9 +30,6 @@ In general, the process for each `.yml` file is as follows:
       *   If your implementation language does not currently have lambda
           examples in the spec, feel free to implement them and send a pull
           request.
-
-      *   The JSON version of the spec represents these tagged values as a hash
-          with a '`__tag__`' key of 'code'.
 
   3. Render the template (stored in the 'template' key) with the given 'data'
      hash.

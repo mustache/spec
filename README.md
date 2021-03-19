@@ -32,12 +32,6 @@ best-effort basis.
 These should be identical to the YAML specifications, but if you find the need
 to regenerate them, they can be trivially rebuilt by invoking `rake build`.
 
-It is also worth noting that some specifications (notably, the lambda module)
-rely on YAML "tags" to denote special types of data (e.g. source code).  Since
-JSON offers no way to denote this, a special key ("`__tag__`") is injected
-with the name of the tag as its value.  See `TESTING.md` for more information
-about handling tagged data.
-
 Optional Modules
 ----------------
 
