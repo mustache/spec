@@ -7,6 +7,7 @@
       "desc": "A lambda's return value should be interpolated.",
       "data": {
         "lambda": {
+          "__tag__": "code",
           "ruby": "proc { \"world\" }",
           "raku": "sub { \"world\" }",
           "perl": "sub { \"world\" }",
@@ -26,6 +27,7 @@
       "data": {
         "planet": "world",
         "lambda": {
+          "__tag__": "code",
           "ruby": "proc { \"{{planet}}\" }",
           "raku": "sub { q+{{planet}}+ }",
           "perl": "sub { \"{{planet}}\" }",
@@ -45,6 +47,7 @@
       "data": {
         "planet": "world",
         "lambda": {
+          "__tag__": "code",
           "ruby": "proc { \"|planet| => {{planet}}\" }",
           "raku": "sub { q+|planet| => {{planet}}+ }",
           "perl": "sub { \"|planet| => {{planet}}\" }",
@@ -63,6 +66,7 @@
       "desc": "Interpolated lambdas should not be cached.",
       "data": {
         "lambda": {
+          "__tag__": "code",
           "ruby": "proc { $calls ||= 0; $calls += 1 }",
           "raku": "sub { state $calls += 1 }",
           "perl": "sub { no strict; $calls += 1 }",
@@ -81,6 +85,7 @@
       "desc": "Lambda results should be appropriately escaped.",
       "data": {
         "lambda": {
+          "__tag__": "code",
           "ruby": "proc { \">\" }",
           "raku": "sub { \">\" }",
           "perl": "sub { \">\" }",
@@ -100,6 +105,7 @@
       "data": {
         "x": "Error!",
         "lambda": {
+          "__tag__": "code",
           "ruby": "proc { |text| text == \"{{x}}\" ? \"yes\" : \"no\" }",
           "raku": "sub { $^section eq q+{{x}}+ ?? \"yes\" !! \"no\" }",
           "perl": "sub { $_[0] eq \"{{x}}\" ? \"yes\" : \"no\" }",
@@ -119,6 +125,7 @@
       "data": {
         "planet": "Earth",
         "lambda": {
+          "__tag__": "code",
           "ruby": "proc { |text| \"#{text}{{planet}}#{text}\" }",
           "raku": "sub { $^section ~ q+{{planet}}+ ~ $^section }",
           "perl": "sub { $_[0] . \"{{planet}}\" . $_[0] }",
@@ -138,6 +145,7 @@
       "data": {
         "planet": "Earth",
         "lambda": {
+          "__tag__": "code",
           "ruby": "proc { |text| \"#{text}{{planet}} => |planet|#{text}\" }",
           "raku": "sub { $^section ~ q+{{planet}} => |planet|+ ~ $^section }",
           "perl": "sub { $_[0] . \"{{planet}} => |planet|\" . $_[0] }",
@@ -156,6 +164,7 @@
       "desc": "Lambdas used for sections should not be cached.",
       "data": {
         "lambda": {
+          "__tag__": "code",
           "ruby": "proc { |text| \"__#{text}__\" }",
           "raku": "sub { \"__\" ~ $^section ~ \"__\" }",
           "perl": "sub { \"__\" . $_[0] . \"__\" }",
@@ -175,6 +184,7 @@
       "data": {
         "static": "static",
         "lambda": {
+          "__tag__": "code",
           "ruby": "proc { |text| false }",
           "raku": "sub { 0 }",
           "perl": "sub { 0 }",
