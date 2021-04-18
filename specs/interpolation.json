@@ -101,6 +101,33 @@
       "expected": "\"1.21 jiggawatts!\""
     },
     {
+      "name": "Basic Null Interpolation",
+      "desc": "Nulls should interpolate as the empty string.",
+      "data": {
+        "cannot": null
+      },
+      "template": "I ({{cannot}}) be seen!",
+      "expected": "I () be seen!"
+    },
+    {
+      "name": "Triple Mustache Null Interpolation",
+      "desc": "Nulls should interpolate as the empty string.",
+      "data": {
+        "cannot": null
+      },
+      "template": "I ({{{cannot}}}) be seen!",
+      "expected": "I () be seen!"
+    },
+    {
+      "name": "Ampersand Null Interpolation",
+      "desc": "Nulls should interpolate as the empty string.",
+      "data": {
+        "cannot": null
+      },
+      "template": "I ({{&cannot}}) be seen!",
+      "expected": "I () be seen!"
+    },
+    {
       "name": "Basic Context Miss Interpolation",
       "desc": "Failed context lookups should default to empty strings.",
       "data": {
