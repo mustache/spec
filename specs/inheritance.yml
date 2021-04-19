@@ -6,30 +6,31 @@ overview: |
   the current closing delimiter; each Parent tag MUST be followed by an End
   Section tag with the same content within the matching parent tag.
 
-  Block tags are used inside of parent tags to assign data onto the context stack 
-  prior to rendering the parent template. Outside of parent tags, block tags are
-  used to indicate where value set in the parent tag should be placed. If no value
-  is set then the content in between the block tags, if any, is rendered.
+  Block tags are used inside of parent tags to assign data onto the context
+  stack prior to rendering the parent template. Outside of parent tags, block
+  tags are used to indicate where value set in the parent tag should be placed.
+  If no value is set then the content in between the block tags, if any, is
+  rendered.
 tests:
   - name: Default
     desc: Default content should be rendered if the block isn't overridden
     data: { }
     template: |
-        {{$title}}Default title{{/title}}
+      {{$title}}Default title{{/title}}
     expected: |
-        Default title
+      Default title
 
   - name: Variable
     desc: Default content renders variables
     data: { bar: 'baz' }
     template: |
-        {{$foo}}default {{bar}} content{{/foo}}
+      {{$foo}}default {{bar}} content{{/foo}}
     expected: |
-        default baz content
+      default baz content
 
   - name: Triple Mustache
     desc: Default content renders triple mustache variables
-    data: { bar: '<baz>' } 
+    data: { bar: '<baz>' }
     template: |
       {{$foo}}default {{{bar}}} content{{/foo}}
     expected: |
@@ -109,6 +110,7 @@ tests:
       partial: "|{{$stuff}}...{{/stuff}}{{$default}} default{{/default}}|"
     expected: |
       test |override1 default| |override2 default|
+
   - name: Override partial with newlines
     desc: Override partial with newlines
     data: { }
@@ -116,7 +118,7 @@ tests:
     partials:
       partial: "{{$ballmer}}peaking{{/ballmer}}"
     expected: "peaked\n\n:(\n"
-    
+
   - name: Inherit indentation
     desc: Inherit indentation when overriding a partial
     data: { }
@@ -124,12 +126,12 @@ tests:
     partials:
       partial: |
         stop:
-            {{$nineties}}collaborate and listen{{/nineties}}
+          {{$nineties}}collaborate and listen{{/nineties}}
     expected: |
       stop:
-          hammer time
+        hammer time
 
-    - name: Only one override
+  - name: Only one override
     desc: Override one substitution but not the other
     data: { }
     template: "{{<partial}}{{$stuff2}}override two{{/stuff2}}{{/partial}}"
