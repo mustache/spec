@@ -37,6 +37,11 @@ overview: |
   to as inheritance. If the Parent tag includes a Block tag that overrides a
   parameter of the Parent template, this may also be referred to as
   substitution.
+
+  Parent templates are taken from the same namespace as regular Partial
+  templates and in fact, injecting a regular Partial is exactly equivalent to
+  injecting a Parent without making any substitutions. Parameter and arguments
+  names live in a namespace that is distinct from both Partials and the context.
 tests:
   - name: Default
     desc: Default content should be rendered if the block isn't overridden
