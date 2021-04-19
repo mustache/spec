@@ -61,7 +61,7 @@
     },
     {
       "name": "Inherit",
-      "desc": "Default content rendered inside included templates",
+      "desc": "Default content rendered inside inherited templates",
       "data": {
       },
       "template": "{{<include}}{{/include}}\n",
@@ -83,7 +83,7 @@
     },
     {
       "name": "Data does not override block",
-      "desc": "Provided data does not override data passed into parent",
+      "desc": "Context does not override argument passed into parent",
       "data": {
         "var": "var in data"
       },
@@ -95,7 +95,7 @@
     },
     {
       "name": "Data does not override block default",
-      "desc": "Provided data does not override default value of block",
+      "desc": "Context does not override default content of block",
       "data": {
         "var": "var in data"
       },
@@ -106,68 +106,68 @@
       "expected": "var in include"
     },
     {
-      "name": "Overridden partial",
-      "desc": "Overridden partial",
+      "name": "Overridden parent",
+      "desc": "Overridden parent",
       "data": {
       },
-      "template": "test {{<partial}}{{$stuff}}override{{/stuff}}{{/partial}}",
+      "template": "test {{<parent}}{{$stuff}}override{{/stuff}}{{/parent}}",
       "partials": {
-        "partial": "{{$stuff}}...{{/stuff}}"
+        "parent": "{{$stuff}}...{{/stuff}}"
       },
       "expected": "test override"
     },
     {
-      "name": "Two overridden partials",
-      "desc": "Two overridden partials with different content",
+      "name": "Two overridden parents",
+      "desc": "Two overridden parents with different content",
       "data": {
       },
-      "template": "test {{<partial}}{{$stuff}}override1{{/stuff}}{{/partial}} {{<partial}}{{$stuff}}override2{{/stuff}}{{/partial}}\n",
+      "template": "test {{<parent}}{{$stuff}}override1{{/stuff}}{{/parent}} {{<parent}}{{$stuff}}override2{{/stuff}}{{/parent}}\n",
       "partials": {
-        "partial": "|{{$stuff}}...{{/stuff}}{{$default}} default{{/default}}|"
+        "parent": "|{{$stuff}}...{{/stuff}}{{$default}} default{{/default}}|"
       },
       "expected": "test |override1 default| |override2 default|\n"
     },
     {
-      "name": "Override partial with newlines",
-      "desc": "Override partial with newlines",
+      "name": "Override parent with newlines",
+      "desc": "Override parent with newlines",
       "data": {
       },
-      "template": "{{<partial}}{{$ballmer}}\npeaked\n\n:(\n{{/ballmer}}{{/partial}}",
+      "template": "{{<parent}}{{$ballmer}}\npeaked\n\n:(\n{{/ballmer}}{{/parent}}",
       "partials": {
-        "partial": "{{$ballmer}}peaking{{/ballmer}}"
+        "parent": "{{$ballmer}}peaking{{/ballmer}}"
       },
       "expected": "peaked\n\n:(\n"
     },
     {
       "name": "Inherit indentation",
-      "desc": "Inherit indentation when overriding a partial",
+      "desc": "Inherit indentation when overriding a parent",
       "data": {
       },
-      "template": "{{<partial}}{{$nineties}}hammer time{{/nineties}}{{/partial}}",
+      "template": "{{<parent}}{{$nineties}}hammer time{{/nineties}}{{/parent}}",
       "partials": {
-        "partial": "stop:\n  {{$nineties}}collaborate and listen{{/nineties}}\n"
+        "parent": "stop:\n  {{$nineties}}collaborate and listen{{/nineties}}\n"
       },
       "expected": "stop:\n  hammer time\n"
     },
     {
       "name": "Only one override",
-      "desc": "Override one substitution but not the other",
+      "desc": "Override one parameter but not the other",
       "data": {
       },
-      "template": "{{<partial}}{{$stuff2}}override two{{/stuff2}}{{/partial}}",
+      "template": "{{<parent}}{{$stuff2}}override two{{/stuff2}}{{/parent}}",
       "partials": {
-        "partial": "{{$stuff}}new default one{{/stuff}}, {{$stuff2}}new default two{{/stuff2}}"
+        "parent": "{{$stuff}}new default one{{/stuff}}, {{$stuff2}}new default two{{/stuff2}}"
       },
       "expected": "new default one, override two"
     },
     {
-      "name": "Super template",
-      "desc": "Super templates behave identically to partials when called with no parameters",
+      "name": "Parent template",
+      "desc": "Parent templates behave identically to partials when called with no parameters",
       "data": {
       },
-      "template": "{{>include}}|{{<include}}{{/include}}",
+      "template": "{{>parent}}|{{<parent}}{{/parent}}",
       "partials": {
-        "include": "{{$foo}}default content{{/foo}}"
+        "parent": "{{$foo}}default content{{/foo}}"
       },
       "expected": "default content|default content"
     },
@@ -176,10 +176,10 @@
       "desc": "Recursion in inherited templates",
       "data": {
       },
-      "template": "{{<include}}{{$foo}}override{{/foo}}{{/include}}",
+      "template": "{{<parent}}{{$foo}}override{{/foo}}{{/parent}}",
       "partials": {
-        "include": "{{$foo}}default content{{/foo}} {{$bar}}{{<include2}}{{/include2}}{{/bar}}",
-        "include2": "{{$foo}}include2 default content{{/foo}} {{<include}}{{$bar}}don't recurse{{/bar}}{{/include}}"
+        "parent": "{{$foo}}default content{{/foo}} {{$bar}}{{<parent2}}{{/parent2}}{{/bar}}",
+        "parent2": "{{$foo}}parent2 default content{{/foo}} {{<parent}}{{$bar}}don't recurse{{/bar}}{{/parent}}"
       },
       "expected": "override override override don't recurse"
     },
@@ -210,24 +210,24 @@
       "expected": "p"
     },
     {
-      "name": "Text inside super",
-      "desc": "Ignores text inside super templates, but does parse $ tags",
+      "name": "Text inside parent",
+      "desc": "Ignores text inside parent templates, but does parse $ tags",
       "data": {
       },
-      "template": "{{<include}} asdfasd {{$foo}}hmm{{/foo}} asdfasdfasdf {{/include}}",
+      "template": "{{<parent}} asdfasd {{$foo}}hmm{{/foo}} asdfasdfasdf {{/parent}}",
       "partials": {
-        "include": "{{$foo}}default content{{/foo}}"
+        "parent": "{{$foo}}default content{{/foo}}"
       },
       "expected": "hmm"
     },
     {
-      "name": "Text inside super",
-      "desc": "Allows text inside a super tag, but ignores it",
+      "name": "Text inside parent",
+      "desc": "Allows text inside a parent tag, but ignores it",
       "data": {
       },
-      "template": "{{<include}} asdfasd asdfasdfasdf {{/include}}",
+      "template": "{{<parent}} asdfasd asdfasdfasdf {{/parent}}",
       "partials": {
-        "include": "{{$foo}}default content{{/foo}}"
+        "parent": "{{$foo}}default content{{/foo}}"
       },
       "expected": "default content"
     }
