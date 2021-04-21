@@ -1,7 +1,7 @@
 overview: |
   Like partials, Parent tags are used to expand an external template into the
-  current template. Contrary to partials, Parent tags may contain optional
-  arguments delimited by block tags. For this reason, Parent tags may also be
+  current template. Unlike partials, Parent tags may contain optional
+  arguments delimited by Block tags. For this reason, Parent tags may also be
   referred to as Parametric Partials.
 
   The Parent tags' content MUST be a non-whitespace character sequence NOT
@@ -9,9 +9,10 @@ overview: |
   an End Section tag with the same content within the matching Parent tag.
 
   This tag's content names the Parent template to inject. Set Delimiter tags
-  MUST NOT affect the parsing of a Parent template. The Parent MUST be rendered
-  against the context stack local to the tag. If the named Parent cannot be
-  found, the empty string SHOULD be used instead, as in interpolations.
+  Preceding a Parent tag MUST NOT affect the parsing of the injected external
+  template. The Parent MUST be rendered against the context stack local to the
+  tag. If the named Parent cannot be found, the empty string SHOULD be used
+  instead, as in interpolations.
 
   Parent tags SHOULD be treated as standalone when appropriate. If this tag is
   used standalone, any whitespace preceding the tag should be treated as
