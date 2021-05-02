@@ -21,6 +21,15 @@
       "expected": "\"\""
     },
     {
+      "name": "Null is falsey",
+      "desc": "Null is falsey.",
+      "data": {
+        "null": null
+      },
+      "template": "\"{{^null}}This should be rendered.{{/null}}\"",
+      "expected": "\"This should be rendered.\""
+    },
+    {
       "name": "Context",
       "desc": "Objects and hashes should behave like truthy values.",
       "data": {

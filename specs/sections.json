@@ -21,6 +21,15 @@
       "expected": "\"\""
     },
     {
+      "name": "Null is falsey",
+      "desc": "Null is falsey.",
+      "data": {
+        "null": null
+      },
+      "template": "\"{{#null}}This should not be rendered.{{/null}}\"",
+      "expected": "\"\""
+    },
+    {
       "name": "Context",
       "desc": "Objects and hashes should be pushed onto the context stack.",
       "data": {
