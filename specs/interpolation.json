@@ -272,6 +272,41 @@
       "expected": ""
     },
     {
+      "name": "Implicit Iterators - Basic Interpolation",
+      "desc": "Unadorned tags should interpolate content into the template.",
+      "data": "world",
+      "template": "Hello, {{.}}!\n",
+      "expected": "Hello, world!\n"
+    },
+    {
+      "name": "Implicit Iterators - HTML Escaping",
+      "desc": "Basic interpolation should be HTML escaped.",
+      "data": "& \" < >",
+      "template": "These characters should be HTML escaped: {{.}}\n",
+      "expected": "These characters should be HTML escaped: &amp; &quot; &lt; &gt;\n"
+    },
+    {
+      "name": "Implicit Iterators - Triple Mustache",
+      "desc": "Triple mustaches should interpolate without HTML escaping.",
+      "data": "& \" < >",
+      "template": "These characters should not be HTML escaped: {{{.}}}\n",
+      "expected": "These characters should not be HTML escaped: & \" < >\n"
+    },
+    {
+      "name": "Implicit Iterators - Ampersand",
+      "desc": "Ampersand should interpolate without HTML escaping.",
+      "data": "& \" < >",
+      "template": "These characters should not be HTML escaped: {{&.}}\n",
+      "expected": "These characters should not be HTML escaped: & \" < >\n"
+    },
+    {
+      "name": "Implicit Iterators - Basic Integer Interpolation",
+      "desc": "Integers should interpolate seamlessly.",
+      "data": 85,
+      "template": "\"{{.}} miles an hour!\"",
+      "expected": "\"85 miles an hour!\""
+    },
+    {
       "name": "Interpolation - Surrounding Whitespace",
       "desc": "Interpolation should not alter surrounding whitespace.",
       "data": {
