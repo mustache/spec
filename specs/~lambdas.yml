@@ -24,6 +24,7 @@ tests:
         python:  'lambda: "world"'
         clojure: '(fn [] "world")'
         lisp:    '(lambda () "world")'
+        pwsh:    '"world"'
     template: "Hello, {{lambda}}!"
     expected: "Hello, world!"
 
@@ -40,6 +41,7 @@ tests:
         python:  'lambda: "{{planet}}"'
         clojure: '(fn [] "{{planet}}")'
         lisp:    '(lambda () "{{planet}}")'
+        pwsh:    '"{{planet}}"'
     template: "Hello, {{lambda}}!"
     expected: "Hello, world!"
 
@@ -56,6 +58,7 @@ tests:
         python:  'lambda: "|planet| => {{planet}}"'
         clojure: '(fn [] "|planet| => {{planet}}")'
         lisp:    '(lambda () "|planet| => {{planet}}")'
+        pwsh:    '"|planet| => {{planet}}"'
     template: "{{= | | =}}\nHello, (|&lambda|)!"
     expected: "Hello, (|planet| => world)!"
 
@@ -71,6 +74,7 @@ tests:
         python:  'lambda: globals().update(calls=globals().get("calls",0)+1) or calls'
         clojure: '(def g (atom 0)) (fn [] (swap! g inc))'
         lisp:    '(let ((g 0)) (lambda () (incf g)))'
+        pwsh:    'if (($null -eq $script:calls) -or ($script:calls -ge 3)){$script:calls=0}; ++$script:calls; $script:calls'
     template: '{{lambda}} == {{{lambda}}} == {{lambda}}'
     expected: '1 == 2 == 3'
 
@@ -86,6 +90,7 @@ tests:
         python:  'lambda: ">"'
         clojure: '(fn [] ">")'
         lisp:    '(lambda () ">")'
+        pwsh:    '">"'
     template: "<{{lambda}}{{{lambda}}}"
     expected: "<&gt;>"
 
@@ -102,6 +107,7 @@ tests:
         python:  'lambda text: text == "{{x}}" and "yes" or "no"'
         clojure: '(fn [text] (if (= text "{{x}}") "yes" "no"))'
         lisp:    '(lambda (text) (if (string= text "{{x}}") "yes" "no"))'
+        pwsh:    'if ($args[0] -eq "{{x}}") {"yes"} else {"no"}'
     template: "<{{#lambda}}{{x}}{{/lambda}}>"
     expected: "<yes>"
 
@@ -118,6 +124,7 @@ tests:
         python:  'lambda text: "%s{{planet}}%s" % (text, text)'
         clojure: '(fn [text] (str text "{{planet}}" text))'
         lisp:    '(lambda (text) (format nil "~a{{planet}}~a" text text))'
+        pwsh:    '"$($args[0]){{planet}}$($args[0])"'
     template: "<{{#lambda}}-{{/lambda}}>"
     expected: "<-Earth->"
 
@@ -134,6 +141,7 @@ tests:
         python:  'lambda text: "%s{{planet}} => |planet|%s" % (text, text)'
         clojure: '(fn [text] (str text "{{planet}} => |planet|" text))'
         lisp:    '(lambda (text) (format nil "~a{{planet}} => |planet|~a" text text))'
+        pwsh:    '"$($args[0]){{planet}} => |planet|$($args[0])"'
     template: "{{= | | =}}<|#lambda|-|/lambda|>"
     expected: "<-{{planet}} => Earth->"
 
@@ -149,6 +157,7 @@ tests:
         python:  'lambda text: "__%s__" % (text)'
         clojure: '(fn [text] (str "__" text "__"))'
         lisp:    '(lambda (text) (format nil "__~a__" text))'
+        pwsh:    '"__$($args[0])__"'
     template: '{{#lambda}}FILE{{/lambda}} != {{#lambda}}LINE{{/lambda}}'
     expected: '__FILE__ != __LINE__'
 
@@ -165,5 +174,6 @@ tests:
         python:  'lambda text: 0'
         clojure: '(fn [text] false)'
         lisp:    '(lambda (text) (declare (ignore text)) nil)'
+        pwsh:    '$false'
     template: "<{{^lambda}}{{static}}{{/lambda}}>"
     expected: "<>"
