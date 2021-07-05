@@ -224,3 +224,14 @@ tests:
     partials:
       parent: "{{$foo}}default content{{/foo}}"
     expected: default content
+
+  - name: Block scope
+    desc: Scope of a substituted block is evaluated in the context of the parent template
+    data:
+      fruit: apples
+      nested:
+        fruit: bananas
+    template: "{{<parent}}{{$block}}I say {{fruit}}.{{/block}}{{/parent}}"
+    partials:
+      parent: "{{#nested}}{{$block}}You say {{fruit}}.{{/block}}{{/nested}}"
+    expected: I say bananas.
