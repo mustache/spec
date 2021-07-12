@@ -304,3 +304,23 @@ tests:
       Hi,
         one
         two
+
+  - name: Nested block reindentation
+    desc: Nested blocks are reindented relative to the surrounding block
+    data: {}
+    template: |
+      {{<parent}}{{$nested}}
+      three
+      {{/nested}}{{/parent}}
+    partials:
+      parent: |
+        {{<grandparent}}{{$block}}
+          one
+          {{$nested}}
+            two
+          {{/nested}}
+        {{/block}}{{/grandparent}}
+      grandparent: "{{$block}}default{{/block}}"
+    expected: |
+      one
+        three
