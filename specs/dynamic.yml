@@ -1,0 +1,126 @@
+overview: |
+  Dynamic partials tags are used to dynamically expand an external template into
+  the current template.
+
+  The tag's content MUST be a non-whitespace character sequence NOT containing
+  the current closing delimiter.
+
+  This tag's content names a key in the context whose value is the name of the
+  partial that will be loaded. If the dynamically named partial cannot be found,
+  the empty string SHOULD be used instead, as in interpolations. Set Delimiter
+  tags MUST NOT affect the parsing of a partial.  The partial MUST be  rendered
+  against the context stack local to the tag. Failed resolutions of the key
+  (context lookups) should be considered falsey and should interpolate as the
+  empty string. If the partial, whose name is retrieved from the context stack,
+  cannot be found, the empty string SHOULD be used instead, as in
+  interpolations.
+
+  Dynamic partial tags SHOULD be treated as standalone when appropriate.  If
+  this tag is used standalone, any whitespace preceding the tag should treated
+  as indentation, and prepended to each line of the partial before rendering.
+tests:
+  - name: Basic Behavior
+    desc: The asterisk operator is used for dynamic partials.
+    data: { dynamic: 'content' }
+    template: '"{{*dynamic}}"'
+    partials: { content: 'Hello, world!' }
+    expected: '"Hello, world!"'
+
+  - name: Context Misses
+    desc: Failed context lookups should be considered falsey.
+    data: { }
+    template: '"{{*missing}}"'
+    partials: { }
+    expected: '""'
+
+  - name: Failed Lookup
+    desc: The empty string should be used when the named partial is not found.
+    data: { dynamic: 'content' }
+    template: '"{{*dynamic}}"'
+    partials: { foobar: 'Hello, world!' }
+    expected: '""'
+
+  - name: Context
+    desc: The asterisk operator should operate within the current context.
+    data: { text: 'Hello, world!', example: 'partial'  }
+    template: '"{{*example}}"'
+    partials: { partial: '*{{text}}*' }
+    expected: '"*Hello, world!*"'
+
+  - name: Recursion
+    desc: The asterisk operator should properly recurse.
+    data: |
+      {
+        template: 'node',
+        content: 'X',
+        nodes: [ { content: 'Y', nodes: [] } ]
+      }
+    template: '{{*template}}'
+    partials: { node: '{{content}}<{{#nodes}}{{>node}}{{/nodes}}>' }
+    expected: 'X<Y<>>'
+
+  # Whitespace Sensitivity
+
+  - name: Surrounding Whitespace
+    desc: The asterisk operator should not alter surrounding whitespace.
+    data: { partial: 'foobar' }
+    template: '| {{*partial}} |'
+    partials: { foobar: "\t|\t" }
+    expected: "| \t|\t |"
+
+  - name: Inline Indentation
+    desc: Whitespace should be left untouched.
+    data: { dynamic: 'partial', data: '|' }
+    template: "  {{data}}  {{* partial}}\n"
+    partials: { partial: ">\n>" }
+    expected: "  |  >\n>\n"
+
+  - name: Standalone Line Endings
+    desc: '"\r\n" should be considered a newline for standalone tags.'
+    data: { dynamic: 'partial' }
+    template: "|\r\n{{*dynamic}}\r\n|"
+    partials: { partial: ">" }
+    expected: "|\r\n>|"
+
+  - name: Standalone Without Previous Line
+    desc: Standalone tags should not require a newline to precede them.
+    data: { dynamic: 'partial' }
+    template: "  {{*dynamic}}\n>"
+    partials: { partial: ">\n>"}
+    expected: "  >\n  >>"
+
+  - name: Standalone Without Newline
+    desc: Standalone tags should not require a newline to follow them.
+    data: { dynamic: 'partial' }
+    template: ">\n  {{*dynamic}}"
+    partials: { partial: ">\n>" }
+    expected: ">\n  >\n  >"
+
+  - name: Standalone Indentation
+    desc: Each line of the partial should be indented before rendering.
+    data: { dynamic: 'partial', content: "<\n->" }
+    template: |
+      \
+       {{*dynamic}}
+      /
+    partials:
+      partial: |
+        |
+        {{{content}}}
+        |
+    expected: |
+      \
+       |
+       <
+      ->
+       |
+      /
+
+  # Whitespace Insensitivity
+
+  - name: Padding Whitespace
+    desc: Superfluous in-tag whitespace should be ignored.
+    data: { dynamic: 'partial', boolean: true }
+    template: "|{{* dynamic }}|"
+    partials: { partial: "[]" }
+    expected: '|[]|'
