@@ -71,7 +71,7 @@ tests:
   - name: Inline Indentation
     desc: Whitespace should be left untouched.
     data: { dynamic: 'partial', data: '|' }
-    template: "  {{data}}  {{* partial}}\n"
+    template: "  {{data}}  {{* dynamic}}\n"
     partials: { partial: ">\n>" }
     expected: "  |  >\n>\n"
 
