@@ -17,7 +17,9 @@ overview: |
 
   Dynamic partial tags SHOULD be treated as standalone when appropriate.  If
   this tag is used standalone, any whitespace preceding the tag should treated
-  as indentation, and prepended to each line of the partial before rendering.
+  as indentation, and prepended to each line of the partial before rendering:
+  whitespace handling around dynamic partials SHOULD be identical to whitespace
+  handling around static (normal) partials.
 tests:
   - name: Basic Behavior
     desc: The asterisk operator is used for dynamic partials.
@@ -31,6 +33,13 @@ tests:
     data: { }
     template: '"{{*missing}}"'
     partials: { }
+    expected: '""'
+
+  - name: Context Misses Again
+    desc: Failed context lookups should be considered falsey.
+    data: { }
+    template: '"{{*missing}}"'
+    partials: { missing: 'Hello, world!' }
     expected: '""'
 
   - name: Failed Lookup
@@ -56,20 +65,25 @@ tests:
         nodes: [ { content: 'Y', nodes: [] } ]
       }
     template: '{{*template}}'
-    partials: { node: '{{content}}<{{#nodes}}{{>node}}{{/nodes}}>' }
+    partials: { node: '{{content}}<{{#nodes}}{{*template}}{{/nodes}}>' }
     expected: 'X<Y<>>'
 
   # Whitespace Sensitivity
 
   - name: Surrounding Whitespace
-    desc: The asterisk operator should not alter surrounding whitespace.
+    desc: |
+      The asterisk operator should not alter surrounding whitespace; any
+      whitespace preceding the tag should treated as indentation while any
+      whitepsace succeding the tag should be left untouched.
     data: { partial: 'foobar' }
     template: '| {{*partial}} |'
     partials: { foobar: "\t|\t" }
     expected: "| \t|\t |"
 
   - name: Inline Indentation
-    desc: Whitespace should be left untouched.
+    desc: |
+      Whitespace should be left untouched: whitespaces preceding the tag
+      should be treated as indentation.
     data: { dynamic: 'partial', data: '|' }
     template: "  {{data}}  {{* dynamic}}\n"
     partials: { partial: ">\n>" }
