@@ -2,36 +2,36 @@ overview: |
   Rationale: this special notation was introduced primarily to allow the dynamic
   loading of partials. The main advantage that this notation offers is to allow
   dynamic loading of partials, which is particularly useful in cases where
-  polymorphic data needs to be rendered in different ways, cases which would
+  polymorphic data needs to be rendered in different ways. Such cases would
   otherwise be possible to render only with solutions that are convoluted,
   inefficient, or both.
   Example.
   Let's consider the following data:
-    items: [
-      { content: 'Hello, World!' },
-      { url: 'http://example.com/foo.jpg' },
-      { content: 'Some text' },
-      { content: 'Some other text' },
-      { url: 'http://example.com/bar.jpg' },
-      { url: 'http://example.com/baz.jpg' },
-      { content: 'Last text here' }
-    ]
-  The goal is to render the different types of items in different ways: the
+      items: [
+        { content: 'Hello, World!' },
+        { url: 'http://example.com/foo.jpg' },
+        { content: 'Some text' },
+        { content: 'Some other text' },
+        { url: 'http://example.com/bar.jpg' },
+        { url: 'http://example.com/baz.jpg' },
+        { content: 'Last text here' }
+      ]
+  The goal is to render the different types of items in different ways. The
   items having a key named `content` should be rendered with the template
   `text.mustache` and the items having a key named `url` should be rendered
   with the template `image.mustache`:
-  text.mustache:
-    {{!image.mustache}}
-    <img src="{{url}}"/>
-  image.mustache:
-    {{!text.mustache}}
-    {{content}}
+  
+      {{!image.mustache}}
+      <img src="{{url}}"/>
+  
+      {{!text.mustache}}
+      {{content}}
   There are already several ways to achieve this goal, here below are
   illustrated and discussed the most significant solutions to this problem.
   ## Using Pre-Processing
   The idea is to use a secondary templating mechanism to dynamically generate
   the template that will be rendered.
-  The template that our secondary templating mechanism generates should look
+  The template that our secondary templating mechanism generates might look
   like this:
     {{!template.mustache}}
     {{items.1.content}}
@@ -46,7 +46,7 @@ overview: |
   The drawbacks are the rendering speed and the complexity that the secondary
   templating mechanism requires.
   ## Using Lambdas
-  The idea is to inject into the data functions that will be later called from
+  The idea is to inject functions into the data that will be later called from
   the template.
   This way the data will look like this:
     items: [
@@ -85,11 +85,11 @@ overview: |
     {{{html}}}
     {{/items}}
   The advantage this solution offers is to have a light main template.
-  The drawback is that the data needs to embed logic and template tags tags in
+  The drawback is that the data needs to embed logic and template tags in
   it.
-  ## Using If Blocks
-  The idea is to put some logic into the main template so it can dynamically
-  load templates:
+  ## Using If-Else Blocks
+  The idea is to put some logic into the main template so it can select the
+  templates at rendering time:
     {{!template.mustache}}
     {{#items}}
     {{#url}}
@@ -100,7 +100,8 @@ overview: |
     {{/content}}
     {{/items}}
   The main advantage of this solution is that it works without adding any
-  overhead fields to the data.
+  overhead fields to the data. It also documents which external templates are
+  appropriate for expansion in this position.
   The drawback is that this solution isn't optimal for heterogeneous data sets
   as the main template grows linearly with the number of polymorphic variants.
   ## Using Dynamic Names
