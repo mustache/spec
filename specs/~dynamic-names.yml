@@ -1,0 +1,158 @@
+overview: |
+  Dynamic Names are a special notation to dynamically determine a tag's content.
+
+  Dynamic Names MUST be a non-whitespace character sequence NOT containing
+  the current closing delimiter. A Dynamic Name consists of an asterisk,
+  followed by a dotted name. The latter follows the same notation as in an
+  Interpolation tag.
+
+  This tag's content refers to a key in the context whose value will be used in
+  place of the Dynamic Name itself as content of the tag. The name resolution is
+  identical to name resolution in Interpolation tags, as follows:
+    1) Split the name on periods; the first part is the name to resolve, any
+    remaining parts should be retained.
+    2) Walk the context stack from top to bottom, finding the first context
+    that is a) a hash containing the name as a key OR b) an object responding
+    to a method with the given name.
+    3) If the context is a hash, the data is the value associated with the
+    name.
+    4) If the context is an object, the data is the value returned by the
+    method with the given name.
+    5) If any name parts were retained in step 1, each should be resolved
+    against a context stack containing only the result from the former
+    resolution.  If any part fails resolution, the result should be considered
+    falsey, and should interpolate as the empty string.
+  The resolved data should be coerced into a string before being used as
+  content.
+
+  Set Delimiter tags MUST NOT affect the resolution of a Dynamic Name. The
+  Dynamic Names MUST be resolved against the context stack local to the tag.
+  Failed resolution of the dynamic name should result in nothing being rendered.
+
+  Engines that implement Dynamic Names MUST support their use in Partial tags.
+  In engines that also implement the optional inheritance spec, Dynamic Names
+  inside Parent tags should be supported as well. Dynamic Names cannot be
+  resolved more than once (Dynamic Names cannot be nested).
+tests:
+  - name: Basic Behavior - Interpolation
+    desc: The asterisk operator is used for dynamic names.
+    data: { dynamic: 'Hello, world!' }
+    template: '"{{*dynamic}}"'
+    partials: { }
+    expected: '"Hello, world!"'
+
+  - name: Basic Behavior - Partial
+    desc: The asterisk operator is used for dynamic partials.
+    data: { dynamic: 'content' }
+    template: '"{{>*dynamic}}"'
+    partials: { content: 'Hello, world!' }
+    expected: '"Hello, world!"'
+
+  - name: Context Misses - Interpolation
+    desc: Failed context lookups should be considered falsey.
+    data: { }
+    template: '"{{*missing}}"'
+    partials: { }
+    expected: '""'
+
+  - name: Context Misses - Partial
+    desc: Failed context lookups should be considered falsey.
+    data: { }
+    template: '"{{>*missing}}"'
+    partials: { missing: 'Hello, world!' }
+    expected: '""'
+
+  - name: Failed Lookup - Partial
+    desc: The empty string should be used when the named partial is not found.
+    data: { dynamic: 'content' }
+    template: '"{{>*dynamic}}"'
+    partials: { foobar: 'Hello, world!' }
+    expected: '""'
+
+  - name: Context
+    desc: The dynamic partial should operate within the current context.
+    data: { text: 'Hello, world!', example: 'partial'  }
+    template: '"{{>*example}}"'
+    partials: { partial: '*{{text}}*' }
+    expected: '"*Hello, world!*"'
+
+  - name: Recursion
+    desc: Dynamic partials should properly recurse.
+    data:
+      template: 'node'
+      content: 'X'
+      nodes: [ { content: 'Y', nodes: [] } ]
+    template: '{{>*template}}'
+    partials: { node: '{{content}}<{{#nodes}}{{>*template}}{{/nodes}}>' }
+    expected: 'X<Y<>>'
+
+  # Whitespace Sensitivity
+
+  - name: Surrounding Whitespace
+    desc: |
+      A dynamic partials should not alter surrounding whitespace; any
+      whitespace preceding the tag should treated as indentation while any
+      whitepsace succeding the tag should be left untouched.
+    data: { partial: 'foobar' }
+    template: '| {{>*partial}} |'
+    partials: { foobar: "\t|\t" }
+    expected: "| \t|\t |"
+
+  - name: Inline Indentation
+    desc: |
+      Whitespace should be left untouched: whitespaces preceding the tag
+      should be treated as indentation.
+    data: { dynamic: 'partial', data: '|' }
+    template: "  {{data}}  {{>* dynamic}}\n"
+    partials: { partial: ">\n>" }
+    expected: "  |  >\n>\n"
+
+  - name: Standalone Line Endings
+    desc: '"\r\n" should be considered a newline for standalone tags.'
+    data: { dynamic: 'partial' }
+    template: "|\r\n{{>*dynamic}}\r\n|"
+    partials: { partial: ">" }
+    expected: "|\r\n>|"
+
+  - name: Standalone Without Previous Line
+    desc: Standalone tags should not require a newline to precede them.
+    data: { dynamic: 'partial' }
+    template: "  {{>*dynamic}}\n>"
+    partials: { partial: ">\n>"}
+    expected: "  >\n  >>"
+
+  - name: Standalone Without Newline
+    desc: Standalone tags should not require a newline to follow them.
+    data: { dynamic: 'partial' }
+    template: ">\n  {{>*dynamic}}"
+    partials: { partial: ">\n>" }
+    expected: ">\n  >\n  >"
+
+  - name: Standalone Indentation
+    desc: Each line of the partial should be indented before rendering.
+    data: { dynamic: 'partial', content: "<\n->" }
+    template: |
+      \
+       {{>*dynamic}}
+      /
+    partials:
+      partial: |
+        |
+        {{{content}}}
+        |
+    expected: |
+      \
+       |
+       <
+      ->
+       |
+      /
+
+  # Whitespace Insensitivity
+
+  - name: Padding Whitespace
+    desc: Superfluous in-tag whitespace should be ignored.
+    data: { dynamic: 'partial', boolean: true }
+    template: "|{{> *dynamic }}|"
+    partials: { partial: "[]" }
+    expected: '|[]|'

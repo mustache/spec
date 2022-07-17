@@ -1,20 +1,30 @@
 {
-  "overview": "Dynamic partials tags are used to dynamically expand an external template into\nthe current template.\n\nThe tag's content MUST be a non-whitespace character sequence NOT containing\nthe current closing delimiter.\n\nThis tag's content names a key in the context whose value is the name of the\npartial that will be loaded. If the dynamically named partial cannot be found,\nthe empty string SHOULD be used instead, as in interpolations. Set Delimiter\ntags MUST NOT affect the parsing of a partial.  The partial MUST be  rendered\nagainst the context stack local to the tag. Failed resolutions of the key\n(context lookups) should be considered falsey and should interpolate as the\nempty string. If the partial, whose name is retrieved from the context stack,\ncannot be found, the empty string SHOULD be used instead, as in\ninterpolations.\n\nDynamic partial tags SHOULD be treated as standalone when appropriate.  If\nthis tag is used standalone, any whitespace preceding the tag should treated\nas indentation, and prepended to each line of the partial before rendering:\nwhitespace handling around dynamic partials SHOULD be identical to whitespace\nhandling around static (normal) partials.\n",
+  "overview": "Dynamic Names are a special way to dynamically refer to a tag name.\n\nDynamic Names MUST be a non-whitespace character sequence NOT containing\nthe current closing delimiter.\n\nThis tag's content refers to a key in the context whose value will be used in\nplace of the Dynamic Name itself as content of the tag. The name resolution is\nas follows:\n  1) Split the name on periods; the first part is the name to resolve, any\n  remaining parts should be retained.\n  2) Walk the context stack from top to bottom, finding the first context\n  that is a) a hash containing the name as a key OR b) an object responding\n  to a method with the given name.\n  3) If the context is a hash, the data is the value associated with the\n  name.\n  4) If the context is an object, the data is the value returned by the\n  method with the given name.\n  5) If any name parts were retained in step 1, each should be resolved\n  against a context stack containing only the result from the former\n  resolution.  If any part fails resolution, the result should be considered\n  falsey, and should interpolate as the empty string.\nThe resolved data should be coerced into a string before being used as\ncontent.\n\nSet Delimiter tags MUST NOT affect the resolution of a Dynamic Name. The\nDynamic Names MUST be rendered against the context stack local to the tag.\nFailed resolutions of the key (context lookups) should be considered falsey\nand should interpolate as the empty string.\n\nDynamic Names can be combined with every other tag: those tags' content is the\nresolution of the Dynamic Name. Dynamic Names cannot be resolved more than\nonce (Dynamic Names cannot be nested).\n",
   "tests": [
     {
-      "name": "Basic Behavior",
+      "name": "Basic Behavior - Interpolation",
+      "desc": "The asterisk operator is used for dynamic names.",
+      "data": {
+        "dynamic": "Hello, world!"
+      },
+      "template": "\"{{*dynamic}}\"",
+      "partials": {},
+      "expected": "\"Hello, world!\""
+    },
+    {
+      "name": "Basic Behavior - Partial",
       "desc": "The asterisk operator is used for dynamic partials.",
       "data": {
         "dynamic": "content"
       },
-      "template": "\"{{*dynamic}}\"",
+      "template": "\"{{>*dynamic}}\"",
       "partials": {
         "content": "Hello, world!"
       },
       "expected": "\"Hello, world!\""
     },
     {
-      "name": "Context Misses",
+      "name": "Context Misses - Interpolation",
       "desc": "Failed context lookups should be considered falsey.",
       "data": {},
       "template": "\"{{*missing}}\"",
@@ -22,22 +32,22 @@
       "expected": "\"\""
     },
     {
-      "name": "Context Misses Again",
+      "name": "Context Misses - Partial",
       "desc": "Failed context lookups should be considered falsey.",
       "data": {},
-      "template": "\"{{*missing}}\"",
+      "template": "\"{{>*missing}}\"",
       "partials": {
         "missing": "Hello, world!"
       },
       "expected": "\"\""
     },
     {
-      "name": "Failed Lookup",
+      "name": "Failed Lookup - Partial",
       "desc": "The empty string should be used when the named partial is not found.",
       "data": {
         "dynamic": "content"
       },
-      "template": "\"{{*dynamic}}\"",
+      "template": "\"{{>*dynamic}}\"",
       "partials": {
         "foobar": "Hello, world!"
       },
@@ -59,7 +69,16 @@
     {
       "name": "Recursion",
       "desc": "The asterisk operator should properly recurse.",
-      "data": "{\n  template: 'node',\n  content: 'X',\n  nodes: [ { content: 'Y', nodes: [] } ]\n}\n",
+      "data": {
+        "template": "node",
+        "content": "X",
+        "nodes": [
+          {
+            "content": "Y",
+            "nodes": []
+          }
+        ]
+      },
       "template": "{{*template}}",
       "partials": {
         "node": "{{content}}<{{#nodes}}{{*template}}{{/nodes}}>"
