@@ -34,26 +34,12 @@ overview: |
   inside Parent tags should be supported as well. Dynamic Names cannot be
   resolved more than once (Dynamic Names cannot be nested).
 tests:
-  - name: Basic Behavior - Interpolation
-    desc: The asterisk operator is used for dynamic names.
-    data: { dynamic: 'Hello, world!' }
-    template: '"{{*dynamic}}"'
-    partials: { }
-    expected: '"Hello, world!"'
-
   - name: Basic Behavior - Partial
     desc: The asterisk operator is used for dynamic partials.
     data: { dynamic: 'content' }
     template: '"{{>*dynamic}}"'
     partials: { content: 'Hello, world!' }
     expected: '"Hello, world!"'
-
-  - name: Context Misses - Interpolation
-    desc: Failed context lookups should be considered falsey.
-    data: { }
-    template: '"{{*missing}}"'
-    partials: { }
-    expected: '""'
 
   - name: Context Misses - Partial
     desc: Failed context lookups should be considered falsey.
