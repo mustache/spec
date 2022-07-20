@@ -62,6 +62,67 @@ tests:
     partials: { partial: '*{{text}}*' }
     expected: '"*Hello, world!*"'
 
+  - name: Dotted Names
+    desc: The dynamic partial should operate within the current context.
+    data: { text: 'Hello, world!', foo: { bar: { baz: 'partial' } } }
+    template: '"{{>*foo.bar.baz}}"'
+    partials: { partial: '*{{text}}*' }
+    expected: '"*Hello, world!*"'
+
+  - name: Dotted Names - Failed Lookup
+    desc: The dynamic partial should operate within the current context.
+    data:
+      text: 'Hello, world!'
+      foo: 'test'
+      test:
+        bar:
+          baz: 'partial'
+    template: '"{{>*foo.bar.baz}}"'
+    partials: { partial: '*{{text}}*' }
+    expected: '""'
+
+  - name: Dotted Names - Failed Lookup
+    desc: The dynamic partial should operate within the current context.
+    data:
+      foo:
+        text: 'Hello, world!'
+        bar:
+          baz: 'partial'
+    template: '"{{>*foo.bar.baz}}"'
+    partials: { partial: '*{{text}}*' }
+    expected: '"**"'
+
+  - name: Dotted names - Context Stacking
+    desc: Dotted names should not push a new frame on the context stack.
+    data:
+      section1: { value: 'section1' }
+      section2: { dynamic: 'partial', value: 'section2' }
+    template: "{{#section1}}{{>*section2.dynamic}}{{/section1}}"
+    partials:
+      partial: "{{value}}"
+    expected: '"section1"'
+
+  - name: Dotted names - Context Stacking Under Repetition
+    desc: Dotted names should not push a new frame on the context stack.
+    data:
+      value: 'test'
+      section1: [ 1, 2 ]
+      section2: { dynamic: 'partial', value: 'section2' }
+    template: "{{#section1}}{{>*section2.dynamic}}{{/section1}}"
+    partials:
+      partial: "{{value}}"
+    expected: "testtest"
+
+  - name: Dotted names - Context Stacking Failed Lookup
+    desc: Dotted names should resolve against the proper context stack.
+    data:
+      section1: [ 1, 2 ]
+      section2: { dynamic: 'partial', value: 'section2' }
+    template: "{{#section1}}{{>*section2.dynamic}}{{/section1}}"
+    partials:
+      partial: '"{{value}}"'
+    expected: '""'
+
   - name: Recursion
     desc: Dynamic partials should properly recurse.
     data:
