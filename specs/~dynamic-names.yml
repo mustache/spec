@@ -99,7 +99,7 @@ tests:
       section2: { dynamic: 'partial', value: 'section2' }
     template: "{{#section1}}{{>*section2.dynamic}}{{/section1}}"
     partials:
-      partial: "{{value}}"
+      partial: '"{{value}}"'
     expected: '"section1"'
 
   - name: Dotted names - Context Stacking Under Repetition

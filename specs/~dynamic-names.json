@@ -114,7 +114,7 @@
       },
       "template": "{{#section1}}{{>*section2.dynamic}}{{/section1}}",
       "partials": {
-        "partial": "{{value}}"
+        "partial": "\"{{value}}\""
       },
       "expected": "\"section1\""
     },
