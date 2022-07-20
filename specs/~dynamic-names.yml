@@ -6,6 +6,12 @@ overview: |
   followed by a dotted name. The latter follows the same notation as in an
   Interpolation tag.
 
+  This tag's dotted name, which is equal to the Dynamic Name excluding the
+  leading asterisk, refers to a key in the context whose value will be used in
+  place of the Dynamic Name itself as content of the tag. The dotted name
+  resolution produces the same value as an Interpolation tag and does not affect
+  the context for further processing.
+
   This tag's content refers to a key in the context whose value will be used in
   place of the Dynamic Name itself as content of the tag. The name resolution is
   identical to name resolution in Interpolation tags, as follows:
@@ -151,7 +157,7 @@ tests:
       Whitespace should be left untouched: whitespaces preceding the tag
       should be treated as indentation.
     data: { dynamic: 'partial', data: '|' }
-    template: "  {{data}}  {{>* dynamic}}\n"
+    template: "  {{data}}  {{>*dynamic}}\n"
     partials: { partial: ">\n>" }
     expected: "  |  >\n>\n"
 
@@ -201,6 +207,6 @@ tests:
   - name: Padding Whitespace
     desc: Superfluous in-tag whitespace should be ignored.
     data: { dynamic: 'partial', boolean: true }
-    template: "|{{> *dynamic }}|"
+    template: "|{{> * dynamic }}|"
     partials: { partial: "[]" }
     expected: '|[]|'
