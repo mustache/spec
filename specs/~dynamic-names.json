@@ -155,7 +155,7 @@
       "partials": {
         "partial": "\"{{value}}\""
       },
-      "expected": "\"\""
+      "expected": "\"\"\"\""
     },
     {
       "name": "Recursion",

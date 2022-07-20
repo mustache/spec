@@ -33,6 +33,7 @@ overview: |
   In engines that also implement the optional inheritance spec, Dynamic Names
   inside Parent tags should be supported as well. Dynamic Names cannot be
   resolved more than once (Dynamic Names cannot be nested).
+
 tests:
   - name: Basic Behavior - Partial
     desc: The asterisk operator is used for dynamic partials.
@@ -69,7 +70,7 @@ tests:
     partials: { partial: '*{{text}}*' }
     expected: '"*Hello, world!*"'
 
-  - name: Dotted Names - Failed Lookup
+  - name: Dotted Names - Operator Precedence
     desc: The dynamic partial should operate within the current context.
     data:
       text: 'Hello, world!'
@@ -121,7 +122,7 @@ tests:
     template: "{{#section1}}{{>*section2.dynamic}}{{/section1}}"
     partials:
       partial: '"{{value}}"'
-    expected: '""'
+    expected: '""""'
 
   - name: Recursion
     desc: Dynamic partials should properly recurse.
@@ -137,9 +138,9 @@ tests:
 
   - name: Surrounding Whitespace
     desc: |
-      A dynamic partials should not alter surrounding whitespace; any
-      whitespace preceding the tag should treated as indentation while any
-      whitepsace succeding the tag should be left untouched.
+      A dynamic partial should not alter surrounding whitespace; any
+      whitespace preceding the tag should be treated as indentation while any
+      whitespace succeding the tag should be left untouched.
     data: { partial: 'foobar' }
     template: '| {{>*partial}} |'
     partials: { foobar: "\t|\t" }
