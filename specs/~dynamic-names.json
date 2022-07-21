@@ -1,5 +1,5 @@
 {
-  "overview": "Dynamic Names are a special notation to dynamically determine a tag's content.\n\nDynamic Names MUST be a non-whitespace character sequence NOT containing\nthe current closing delimiter. A Dynamic Name consists of an asterisk,\nfollowed by a dotted name. The latter follows the same notation as in an\nInterpolation tag.\n\nThis tag's dotted name, which is equal to the Dynamic Name excluding the\nleading asterisk, refers to a key in the context whose value will be used in\nplace of the Dynamic Name itself as content of the tag. The dotted name\nresolution produces the same value as an Interpolation tag and does not affect\nthe context for further processing.\n\nSet Delimiter tags MUST NOT affect the resolution of a Dynamic Name. The\nDynamic Names MUST be resolved against the context stack local to the tag.\nFailed resolution of the dynamic name should result in nothing being rendered.\n\nEngines that implement Dynamic Names MUST support their use in Partial tags.\nIn engines that also implement the optional inheritance spec, Dynamic Names\ninside Parent tags should be supported as well. Dynamic Names cannot be\nresolved more than once (Dynamic Names cannot be nested).\n",
+  "overview": "Rationale: this special notation was introduced specifically to allow the\ndynamic loading of partials. Although there are already solutions that allow\nto dynamically load partials possible, these solutions either require the use\nof optional (and complex) features such as lambdas, or require mechanisms that\nin interpreted programming languages are rather tedious to implement and are\nalso rather inefficient, both in terms of space, due to a possible necessary\noverhead of the included partials, and in terms of computational efficiency,\nregarding a possible necessary pre-buffering.\n\nDynamic Names are a special notation to dynamically determine a tag's content.\n\nDynamic Names MUST be a non-whitespace character sequence NOT containing\nthe current closing delimiter. A Dynamic Name consists of an asterisk,\nfollowed by a dotted name. The latter follows the same notation as in an\nInterpolation tag.\n\nThis tag's dotted name, which is equal to the Dynamic Name excluding the\nleading asterisk, refers to a key in the context whose value will be used in\nplace of the Dynamic Name itself as content of the tag. The dotted name\nresolution produces the same value as an Interpolation tag and does not affect\nthe context for further processing.\n\nSet Delimiter tags MUST NOT affect the resolution of a Dynamic Name. The\nDynamic Names MUST be resolved against the context stack local to the tag.\nFailed resolution of the dynamic name should result in nothing being rendered.\n\nEngines that implement Dynamic Names MUST support their use in Partial tags.\nIn engines that also implement the optional inheritance spec, Dynamic Names\ninside Parent tags should be supported as well. Dynamic Names cannot be\nresolved more than once (Dynamic Names cannot be nested).\n",
   "tests": [
     {
       "name": "Basic Behavior - Partial",
@@ -10,6 +10,20 @@
       "template": "\"{{>*dynamic}}\"",
       "partials": {
         "content": "Hello, world!"
+      },
+      "expected": "\"Hello, world!\""
+    },
+    {
+      "name": "Basic Behavior - Name Resolution",
+      "desc": "The asterisk is not part of the name that will be resolved in the contex.\n",
+      "data": {
+        "dynamic": "content",
+        "*dynamic": "wrong"
+      },
+      "template": "\"{{>*dynamic}}\"",
+      "partials": {
+        "content": "Hello, world!",
+        "wrong": "Invisible"
       },
       "expected": "\"Hello, world!\""
     },

@@ -1,4 +1,13 @@
 overview: |
+  Rationale: this special notation was introduced specifically to allow the
+  dynamic loading of partials. Although there are already solutions that allow
+  to dynamically load partials possible, these solutions either require the use
+  of optional (and complex) features such as lambdas, or require mechanisms that
+  in interpreted programming languages are rather tedious to implement and are
+  also rather inefficient, both in terms of space, due to a possible necessary
+  overhead of the included partials, and in terms of computational efficiency,
+  regarding a possible necessary pre-buffering.
+
   Dynamic Names are a special notation to dynamically determine a tag's content.
 
   Dynamic Names MUST be a non-whitespace character sequence NOT containing
@@ -27,6 +36,14 @@ tests:
     data: { dynamic: 'content' }
     template: '"{{>*dynamic}}"'
     partials: { content: 'Hello, world!' }
+    expected: '"Hello, world!"'
+
+  - name: Basic Behavior - Name Resolution
+    desc: |
+      The asterisk is not part of the name that will be resolved in the contex.
+    data: { dynamic: 'content', '*dynamic': 'wrong' }
+    template: '"{{>*dynamic}}"'
+    partials: { content: 'Hello, world!', wrong: 'Invisible' }
     expected: '"Hello, world!"'
 
   - name: Context Misses - Partial
