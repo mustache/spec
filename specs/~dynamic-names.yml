@@ -1,12 +1,13 @@
 overview: |
   Rationale: this special notation was introduced specifically to allow the
-  dynamic loading of partials. Although there are already solutions that allow
-  to dynamically load partials possible, these solutions either require the use
-  of optional (and complex) features such as lambdas, or require mechanisms that
-  in interpreted programming languages are rather tedious to implement and are
-  also rather inefficient, both in terms of space, due to a possible necessary
-  overhead of the included partials, and in terms of computational efficiency,
-  regarding a possible necessary pre-buffering.
+  dynamic loading of partials. The main advantage that this notation
+  offers is to allow dynamic loading of partials, which is particularly useful
+  in cases where polymorphic data needs to be rendered, or in cases where
+  a child template is shared by multiple parent templates; cases which
+  otherwise would be possible to render only by using either complex (and
+  optional) features such as lambdas, or by using solutions that are inefficient
+  both in terms of space and in terms of computational efficiency, such as:
+  overloading the template with if blocks or preprocessing the template.
 
   Dynamic Names are a special notation to dynamically determine a tag's content.
 
@@ -15,15 +16,15 @@ overview: |
   followed by a dotted name. The latter follows the same notation as in an
   Interpolation tag.
 
-  This tag's dotted name, which is equal to the Dynamic Name excluding the
-  leading asterisk, refers to a key in the context whose value will be used in
+  This tag's dotted name, which is the Dynamic Name excluding the
+  leading asterisk, references a key in the context whose value will be used in
   place of the Dynamic Name itself as content of the tag. The dotted name
   resolution produces the same value as an Interpolation tag and does not affect
   the context for further processing.
 
   Set Delimiter tags MUST NOT affect the resolution of a Dynamic Name. The
   Dynamic Names MUST be resolved against the context stack local to the tag.
-  Failed resolution of the dynamic name should result in nothing being rendered.
+  Failed resolution of the dynamic name SHOULD result in nothing being rendered.
 
   Engines that implement Dynamic Names MUST support their use in Partial tags.
   In engines that also implement the optional inheritance spec, Dynamic Names
