@@ -28,7 +28,7 @@ overview: |
 
   Engines that implement Dynamic Names MUST support their use in Partial tags.
   In engines that also implement the optional inheritance spec, Dynamic Names
-  inside Parent tags should be supported as well. Dynamic Names cannot be
+  inside Parent tags SHOULD be supported as well. Dynamic Names cannot be
   resolved more than once (Dynamic Names cannot be nested).
 
 tests:
