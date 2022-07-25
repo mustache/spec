@@ -1,5 +1,5 @@
 {
-  "overview": "Rationale: this special notation was introduced specifically to allow the\ndynamic loading of partials. The main advantage that this new special notation\noffers is to allow dynamic loading of partials, which is particularly useful\nin cases where there needs to be rendered polymorphic data or in cases where\nthere is a child template shared by multiple parent templates; cases which\notherwise would be possible to render only by using either complex (and\noptional) features such as lambdas, or by using solutions that are inefficient\nboth in terms of space and in terms of computational efficiency, such as:\noverloading the template with if blocks or preprocessing the template.\n\nDynamic Names are a special notation to dynamically determine a tag's content.\n\nDynamic Names MUST be a non-whitespace character sequence NOT containing\nthe current closing delimiter. A Dynamic Name consists of an asterisk,\nfollowed by a dotted name. The latter follows the same notation as in an\nInterpolation tag.\n\nThis tag's dotted name, which is equal to the Dynamic Name excluding the\nleading asterisk, refers to a key in the context whose value will be used in\nplace of the Dynamic Name itself as content of the tag. The dotted name\nresolution produces the same value as an Interpolation tag and does not affect\nthe context for further processing.\n\nSet Delimiter tags MUST NOT affect the resolution of a Dynamic Name. The\nDynamic Names MUST be resolved against the context stack local to the tag.\nFailed resolution of the dynamic name should result in nothing being rendered.\n\nEngines that implement Dynamic Names MUST support their use in Partial tags.\nIn engines that also implement the optional inheritance spec, Dynamic Names\ninside Parent tags should be supported as well. Dynamic Names cannot be\nresolved more than once (Dynamic Names cannot be nested).\n",
+  "overview": "Rationale: this special notation was introduced specifically to allow the\ndynamic loading of partials. The main advantage that this notation\noffers is to allow dynamic loading of partials, which is particularly useful\nin cases where polymorphic data needs to be rendered, or in cases where\na child template is shared by multiple parent templates; cases which\notherwise would be possible to render only by using either complex (and\noptional) features such as lambdas, or by using solutions that are inefficient\nboth in terms of space and in terms of computational efficiency, such as:\noverloading the template with if blocks or preprocessing the template.\n\nDynamic Names are a special notation to dynamically determine a tag's content.\n\nDynamic Names MUST be a non-whitespace character sequence NOT containing\nthe current closing delimiter. A Dynamic Name consists of an asterisk,\nfollowed by a dotted name. The dotted name follows the same notation as in an\nInterpolation tag.\n\nThis tag's dotted name, which is the Dynamic Name excluding the\nleading asterisk, references a key in the context whose value will be used in\nplace of the Dynamic Name itself as content of the tag. The dotted name\nresolution produces the same value as an Interpolation tag and does not affect\nthe context for further processing.\n\nSet Delimiter tags MUST NOT affect the resolution of a Dynamic Name. The\nDynamic Names MUST be resolved against the context stack local to the tag.\nFailed resolution of the dynamic name SHOULD result in nothing being rendered.\n\nEngines that implement Dynamic Names MUST support their use in Partial tags.\nIn engines that also implement the optional inheritance spec, Dynamic Names\ninside Parent tags SHOULD be supported as well. Dynamic Names cannot be\nresolved more than once (Dynamic Names cannot be nested).\n",
   "tests": [
     {
       "name": "Basic Behavior - Partial",
@@ -15,7 +15,7 @@
     },
     {
       "name": "Basic Behavior - Name Resolution",
-      "desc": "The asterisk is not part of the name that will be resolved in the contex.\n",
+      "desc": "The asterisk is not part of the name that will be resolved in the context.\n",
       "data": {
         "dynamic": "content",
         "*dynamic": "wrong"
@@ -81,7 +81,7 @@
     },
     {
       "name": "Dotted Names - Operator Precedence",
-      "desc": "The dynamic partial should operate within the current context.",
+      "desc": "The dotted name should be resolved entirely before being dereferenced.",
       "data": {
         "text": "Hello, world!",
         "foo": "test",
@@ -189,6 +189,37 @@
         "node": "{{content}}<{{#nodes}}{{>*template}}{{/nodes}}>"
       },
       "expected": "X<Y<>>"
+    },
+    {
+      "name": "Dynamic Names - Dobule Dereferencing",
+      "desc": "Dynamic Names can't be dereferenced more than once.",
+      "data": {
+        "dynamic": "test",
+        "test": "content"
+      },
+      "template": "\"{{>**dynamic}}\"",
+      "partials": {
+        "content": "Hello, world!"
+      },
+      "expected": "\"\""
+    },
+    {
+      "name": "Dynamic Names - Composed Dereferencing",
+      "desc": "Dynamic Names cannot have composed dereferencing.",
+      "data": {
+        "foo": "fizz",
+        "bar": "buzz",
+        "fizz": {
+          "buzz": {
+            "content": null
+          }
+        }
+      },
+      "template": "\"{{>*foo.*bar}}\"",
+      "partials": {
+        "content": "Hello, world!"
+      },
+      "expected": "\"\""
     },
     {
       "name": "Surrounding Whitespace",

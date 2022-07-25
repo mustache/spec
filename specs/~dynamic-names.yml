@@ -13,7 +13,7 @@ overview: |
 
   Dynamic Names MUST be a non-whitespace character sequence NOT containing
   the current closing delimiter. A Dynamic Name consists of an asterisk,
-  followed by a dotted name. The latter follows the same notation as in an
+  followed by a dotted name. The dotted name follows the same notation as in an
   Interpolation tag.
 
   This tag's dotted name, which is the Dynamic Name excluding the
@@ -41,7 +41,7 @@ tests:
 
   - name: Basic Behavior - Name Resolution
     desc: |
-      The asterisk is not part of the name that will be resolved in the contex.
+      The asterisk is not part of the name that will be resolved in the context.
     data: { dynamic: 'content', '*dynamic': 'wrong' }
     template: '"{{>*dynamic}}"'
     partials: { content: 'Hello, world!', wrong: 'Invisible' }
@@ -76,7 +76,7 @@ tests:
     expected: '"*Hello, world!*"'
 
   - name: Dotted Names - Operator Precedence
-    desc: The dynamic partial should operate within the current context.
+    desc: The dotted name should be resolved entirely before being dereferenced.
     data:
       text: 'Hello, world!'
       foo: 'test'
@@ -138,6 +138,20 @@ tests:
     template: '{{>*template}}'
     partials: { node: '{{content}}<{{#nodes}}{{>*template}}{{/nodes}}>' }
     expected: 'X<Y<>>'
+
+  - name: Dynamic Names - Dobule Dereferencing
+    desc: Dynamic Names can't be dereferenced more than once.
+    data: { dynamic: 'test', 'test': 'content' }
+    template: '"{{>**dynamic}}"'
+    partials: { content: 'Hello, world!' }
+    expected: '""'
+
+  - name: Dynamic Names - Composed Dereferencing
+    desc: Dynamic Names cannot have composed dereferencing.
+    data: { foo: 'fizz', bar: 'buzz', fizz: { buzz: { 'content' } } }
+    template: '"{{>*foo.*bar}}"'
+    partials: { content: 'Hello, world!' }
+    expected: '""'
 
   # Whitespace Sensitivity
 
