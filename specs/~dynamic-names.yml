@@ -1,13 +1,11 @@
 overview: |
-  Rationale: this special notation was introduced specifically to allow the
-  dynamic loading of partials. The main advantage that this notation
-  offers is to allow dynamic loading of partials, which is particularly useful
-  in cases where polymorphic data needs to be rendered, or in cases where
-  a child template is shared by multiple parent templates; cases which
-  otherwise would be possible to render only by using either complex (and
-  optional) features such as lambdas, or by using solutions that are inefficient
-  both in terms of space and in terms of computational efficiency, such as:
-  overloading the template with if blocks or preprocessing the template.
+  Rationale: this special notation was introduced primarly to allow the dynamic
+  loading of partials. The main advantage that this notation offers is to allow
+  dynamic loading of partials, which is particularly useful in cases where
+  polymorphic data needs to be rendered in different ways, or in cases where a
+  partial template needs to be included by multiple parent templates; cases
+  which would otherwise be possible to render only with solutions that are
+  convoluted, inefficient, or both.
 
   Dynamic Names are a special notation to dynamically determine a tag's content.
 
