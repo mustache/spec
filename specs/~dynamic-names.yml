@@ -128,7 +128,8 @@ overview: |
   | Pre-Processing | Essential template, | Secondary templating system needed, |
   |                | more control        | slower rendering                    |
   | Lambdas        | Slim template       | Data tagging, logic in data         |
-  | If Blocks      | No data overhead    | Template linear growth              |
+  | If Blocks      | No data overhead,   | Template linear growth              |
+  |                | self-documenting    |                                     |
   | Dynamic Names  | Slim template       | Data tagging                        |
   +----------------+---------------------+-------------------------------------+
 
