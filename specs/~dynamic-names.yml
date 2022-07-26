@@ -1,11 +1,136 @@
 overview: |
-  Rationale: this special notation was introduced primarly to allow the dynamic
+  Rationale: this special notation was introduced primarily to allow the dynamic
   loading of partials. The main advantage that this notation offers is to allow
   dynamic loading of partials, which is particularly useful in cases where
-  polymorphic data needs to be rendered in different ways, or in cases where a
-  partial template needs to be included by multiple parent templates; cases
-  which would otherwise be possible to render only with solutions that are
-  convoluted, inefficient, or both.
+  polymorphic data needs to be rendered in different ways, cases which would
+  otherwise be possible to render only with solutions that are convoluted,
+  inefficient, or both.
+  Example.
+  Let's consider the following data:
+    items: [
+      { content: 'Hello, World!' },
+      { url: 'http://example.com/foo.jpg' },
+      { content: 'Some text' },
+      { content: 'Some other text' },
+      { url: 'http://example.com/bar.jpg' },
+      { url: 'http://example.com/baz.jpg' },
+      { content: 'Last text here' }
+    ]
+  The goal is to render the different types of items in different ways: the
+  items having a key named `content` should be rendered with the template
+  `text.mustache` and the items having a key named `url` should be rendered
+  with the template `image.mustache`:
+  text.mustache:
+    {{!image.mustache}}
+    <img src="{{url}}"/>
+  image.mustache:
+    {{!text.mustache}}
+    {{content}}
+  There are already several ways to achieve this goal, here below are
+  illustrated and discussed the most significant solutions to this problem.
+  ## Using Pre-Processing
+  The idea is to use a secondary templating mechanism to dynamically generate
+  the template that will be rendered.
+  The template that our secondary templating mechanism generates should look
+  like this:
+    {{!template.mustache}}
+    {{items.1.content}}
+    <img src="{{items.2.url}}"/>
+    {{items.3.content}}
+    {{items.4.content}}
+    <img src="{{items.5.url}}"/>
+    <img src="{{items.6.url}}"/>
+    {{items.7.content}}
+  This solutions offers the advantages of having more control over the template
+  and minimizing the template blocks to the essential ones.
+  The drawbacks are the rendering speed and the complexity that the secondary
+  templating mechanism requires.
+  ## Using Lambdas
+  The idea is to inject into the data functions that will be later called from
+  the template.
+  This way the data will look like this:
+    items: [
+      {
+        content: 'Hello, World!',
+        html: function() { return '{{>text}}'; }
+      },
+      {
+        url: 'http://example.com/foo.jpg',
+        html: function() { return '{{>image}}'; }
+      },
+      {
+        content: 'Some text',
+        html: function() { return '{{>text}}'; }
+      },
+      {
+        content: 'Some other text',
+        html: function() { return '{{>text}}'; }
+      },
+      {
+        url: 'http://example.com/bar.jpg',
+        html: function() { return '{{>image}}'; }
+      },
+      {
+        url: 'http://example.com/baz.jpg',
+        html: function() { return '{{>image}}'; }
+      },
+      {
+        content: 'Last text here',
+        html: function() { return '{{>text}}'; }
+      }
+    ]
+  And the template will look like this:
+    {{!template.mustache}}
+    {{#items}}
+    {{{html}}}
+    {{/items}}
+  The advantage this solution offers is to have a light main template.
+  The drawback is that the data needs to embed logic and template tags tags in
+  it.
+  ## Using If Blocks
+  The idea is to put some logic into the main template so it can dynamically
+  load templates:
+    {{!template.mustache}}
+    {{#items}}
+    {{#url}}
+    {{>image}}
+    {{/url}}
+    {{#content}}
+    {{>text}}
+    {{/content}}
+    {{/items}}
+  The main advantage of this solution is that it works without adding any
+  overhead fields to the data.
+  The drawback is that this solution isn't optimal for heterogeneous data sets
+  as the main template grows linearly with the number of polymorphic variants.
+  ## Using Dynamic Names
+  This is the solution proposed by this spec.
+  The idea is to load partials dynamically.
+  This way the data items have to be tagged with the corresponding partial name:
+    items: [
+      { content: 'Hello, World!',          dynamic: 'text' },
+      { url: 'http://example.com/foo.jpg', dynamic: 'image' },
+      { content: 'Some text',              dynamic: 'text' },
+      { content: 'Some other text',        dynamic: 'text' },
+      { url: 'http://example.com/bar.jpg', dynamic: 'image' },
+      { url: 'http://example.com/baz.jpg', dynamic: 'image' },
+      { content: 'Last text here',         dynamic: 'text' }
+    ]
+  And the template would simple look like this:
+    {{!template.mustache}}
+    {{#items}}
+    {{>*dynamic}}
+    {{/items}}
+  Summary:
+  +----------------+---------------------+-------------------------------------+
+  |    Approach    |        Pros         |                Cons                 |
+  +----------------+---------------------+-------------------------------------+
+  | Pre-Processing | Essential template, | Secondary templating system needed, |
+  |                | more control        | slower rendering                    |
+  | Lambdas        | Slim template       | Data tagging, logic in data         |
+  | If Blocks      | No data overhead    | Template linear growth              |
+  | Dynamic Names  | Slim template       | Data tagging                        |
+  +----------------+---------------------+-------------------------------------+
 
   Dynamic Names are a special notation to dynamically determine a tag's content.
 
