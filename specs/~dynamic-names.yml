@@ -18,17 +18,16 @@ overview: |
       ]
   The goal is to render the different types of items in different ways. The
   items having a key named `content` should be rendered with the template
-  `text.mustache` and the items having a key named `url` should be rendered
-  with the template `image.mustache`:
-  
+  `text.mustache`:
       {{!image.mustache}}
       <img src="{{url}}"/>
-  
+  And the items having a key named `url` should be rendered with the template
+  `image.mustache`:
       {{!text.mustache}}
       {{content}}
   There are already several ways to achieve this goal, here below are
   illustrated and discussed the most significant solutions to this problem.
-  ## Using Pre-Processing
+  Using Pre-Processing
   The idea is to use a secondary templating mechanism to dynamically generate
   the template that will be rendered.
   The template that our secondary templating mechanism generates might look
@@ -45,7 +44,7 @@ overview: |
   and minimizing the template blocks to the essential ones.
   The drawbacks are the rendering speed and the complexity that the secondary
   templating mechanism requires.
-  ## Using Lambdas
+  Using Lambdas
   The idea is to inject functions into the data that will be later called from
   the template.
   This way the data will look like this:
@@ -87,7 +86,7 @@ overview: |
   The advantage this solution offers is to have a light main template.
   The drawback is that the data needs to embed logic and template tags in
   it.
-  ## Using If-Else Blocks
+  Using If-Else Blocks
   The idea is to put some logic into the main template so it can select the
   templates at rendering time:
     {{!template.mustache}}
@@ -104,7 +103,7 @@ overview: |
   appropriate for expansion in this position.
   The drawback is that this solution isn't optimal for heterogeneous data sets
   as the main template grows linearly with the number of polymorphic variants.
-  ## Using Dynamic Names
+  Using Dynamic Names
   This is the solution proposed by this spec.
   The idea is to load partials dynamically.
   This way the data items have to be tagged with the corresponding partial name:
