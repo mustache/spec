@@ -191,7 +191,7 @@
       "expected": "X<Y<>>"
     },
     {
-      "name": "Dynamic Names - Dobule Dereferencing",
+      "name": "Dynamic Names - Double Dereferencing",
       "desc": "Dynamic Names can't be dereferenced more than once.",
       "data": {
         "dynamic": "test",

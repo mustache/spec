@@ -5,6 +5,7 @@ overview: |
   polymorphic data needs to be rendered in different ways. Such cases would
   otherwise be possible to render only with solutions that are convoluted,
   inefficient, or both.
+
   Example.
   Let's consider the following data:
 
@@ -17,20 +18,25 @@ overview: |
         { url: 'http://example.com/baz.jpg' },
         { content: 'Last text here' }
       ]
+
   The goal is to render the different types of items in different ways. The
   items having a key named `content` should be rendered with the template
   `text.mustache`:
 
       {{!text.mustache}}
       {{content}}
+
   And the items having a key named `url` should be rendered with the template
   `image.mustache`:
 
       {{!image.mustache}}
       <img src="{{url}}"/>
+
   There are already several ways to achieve this goal, here below are
   illustrated and discussed the most significant solutions to this problem.
+
   Using Pre-Processing
+
   The idea is to use a secondary templating mechanism to dynamically generate
   the template that will be rendered.
   The template that our secondary templating mechanism generates might look
@@ -44,11 +50,14 @@ overview: |
       <img src="{{items.5.url}}"/>
       <img src="{{items.6.url}}"/>
       {{items.7.content}}
+
   This solutions offers the advantages of having more control over the template
   and minimizing the template blocks to the essential ones.
   The drawbacks are the rendering speed and the complexity that the secondary
   templating mechanism requires.
+
   Using Lambdas
+
   The idea is to inject functions into the data that will be later called from
   the template.
   This way the data will look like this:
@@ -83,16 +92,20 @@ overview: |
           html: function() { return '{{>text}}'; }
         }
       ]
+
   And the template will look like this:
 
       {{!template.mustache}}
       {{#items}}
       {{{html}}}
       {{/items}}
+
   The advantage this solution offers is to have a light main template.
   The drawback is that the data needs to embed logic and template tags in
   it.
+
   Using If-Else Blocks
+
   The idea is to put some logic into the main template so it can select the
   templates at rendering time:
 
@@ -105,12 +118,15 @@ overview: |
       {{>text}}
       {{/content}}
       {{/items}}
+
   The main advantage of this solution is that it works without adding any
   overhead fields to the data. It also documents which external templates are
   appropriate for expansion in this position.
   The drawback is that this solution isn't optimal for heterogeneous data sets
   as the main template grows linearly with the number of polymorphic variants.
+
   Using Dynamic Names
+
   This is the solution proposed by this spec.
   The idea is to load partials dynamically.
   This way the data items have to be tagged with the corresponding partial name:
@@ -124,12 +140,14 @@ overview: |
         { url: 'http://example.com/baz.jpg', dynamic: 'image' },
         { content: 'Last text here',         dynamic: 'text' }
       ]
+
   And the template would simple look like this:
 
       {{!template.mustache}}
       {{#items}}
       {{>*dynamic}}
       {{/items}}
+
   Summary:
 
     +----------------+---------------------+-----------------------------------+
@@ -142,6 +160,7 @@ overview: |
     |                | self-documenting    |                                   |
     | Dynamic Names  | Slim template       | Data tagging                      |
     +----------------+---------------------+-----------------------------------+
+
   Dynamic Names are a special notation to dynamically determine a tag's content.
 
   Dynamic Names MUST be a non-whitespace character sequence NOT containing
@@ -272,7 +291,7 @@ tests:
     partials: { node: '{{content}}<{{#nodes}}{{>*template}}{{/nodes}}>' }
     expected: 'X<Y<>>'
 
-  - name: Dynamic Names - Dobule Dereferencing
+  - name: Dynamic Names - Double Dereferencing
     desc: Dynamic Names can't be dereferenced more than once.
     data: { dynamic: 'test', 'test': 'content' }
     template: '"{{>**dynamic}}"'
