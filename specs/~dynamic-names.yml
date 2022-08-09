@@ -300,7 +300,7 @@ tests:
 
   - name: Dynamic Names - Composed Dereferencing
     desc: Dotted Names are resolved entirely before dereferencing begins.
-    data: { foo: 'fizz', bar: 'buzz', fizz: { buzz: { 'content' } } }
+    data: { foo: 'fizz', bar: 'buzz', fizz: { buzz: { content: null } } }
     template: '"{{>*foo.*bar}}"'
     partials: { content: 'Hello, world!' }
     expected: '""'
