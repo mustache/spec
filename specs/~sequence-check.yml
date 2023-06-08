@@ -24,7 +24,7 @@ overview: |
     {{#list}}
       <p>{{item}}</p>
     {{/list}}
-  {{/list}}
+  {{/?list}}
   ```
 
   The new qualified section should not affect the stack and should be
@@ -40,33 +40,51 @@ overview: |
 
   Discussion:
 
-  Other possible solutions would be
-  - reserve a new sigil ('?' could be an option)
-  => not chosen as this would be a very narrow use case
-  - use a conventional name extension (trailing '?', '$len', ...)
-  => could be ok provived the extension does NOT contain a '.' as it whould
-  create interactions with dotted names resolution.
-  => this solution is not consistent with Mustache overall design, with the
-  extension looking like a move toward adding function call syntax.
-  - use a different qualifier
-  => '?' seems best to convey the meaning
+  Current view on options
 
-  The reasoning for the behaviour with lamba (not called) is that the result
-  of a lambda is NOT a sequence (it is the source of a mustache template).
+  Approach #1
+    Preprocess data to add a boolean ({{#listNonEmpty}}{{/listNonEmpty}})
+    Pros:
+    - Portable, no template language modifications required
+    Cons:
+    - Convenience: requires coordinated deployment of code and templates
+  Approach #2
+    Host language specific notation ({{#list.0}}{{/list.0}}, {{#list.size}}{{/list.size}}, ...)
+    Pros:
+    - No template language modification required
+    Cons:
+    - Implementation-specific, convenient subkey not always available (ex
+    native environment without scripting capability)
+    - Stacking of tested fields affect resolution (bactktracking required)
+  Approach #3
+    Special purpose sigil ({{?list}}{{/list}})
+    Pros:
+    - Shortest notation in this comparison
+    Cons:
+    - Sacrifices a special character for a very narrow use case
+  Approach #4
+    Power lambdas (#135, {{#nonEmpty.list}}{{/nonEmpty.list}} or similar)
+    Pros:
+    - Powerful language feature that facilitates many use cases at once and does not introduce new special notation
+    Cons:
+    - Not widely implemented
+    - Requires a scripting execution environement
+  Approach %5
+    Current proposal: key modifier ({{#?list}}{{/?list}})
+    Pros:
+    - Short notation, does not sacrifice a sigil, no data preprocessing needed
+    Cons:
+    - Gliding scale: are we going to introduce key modifiers for every narrow use case? Also not widely implemented.
 
 
   Opened questions:
 
-  Should we require result of callable be cached and used for resolution of
-  a matching unqualified section in the same stack frame?
-  => bias towards no to simplify implementation, but callable with side effects
-  could lead to unexpected output.
-
-  This proposition will break rendering of existing templates where sections
+  This proposition breaks rendering of existing templates where sections
   refers to symbols starting with '?' that are not used as list indicators.
   Is it a significant concern or can we ignore this?
   => one simple option is to require mustache engines have API to activate
   the feature but it is not really in scope of this specification.
+
 tests:
   - name: Basic sequence check
     desc: Non-empty sequence emits the conditional block
@@ -76,7 +94,7 @@ tests:
     template: |
       {{#?list}}
       {{heading}}
-      {{/list}}
+      {{/?list}}
     expected: |
       Heading
   - name: Basic sequence check
@@ -87,7 +105,7 @@ tests:
     template: |
       {{#?list}}
       {{heading}}
-      {{/list}}
+      {{/?list}}
     expected: ""
   - name: Basic sequence check
     desc: Dotted names can be checked
@@ -98,10 +116,10 @@ tests:
     template: |
       {{#?obj.list1}}
       Ok
-      {{/obj.list1}}
+      {{/?obj.list1}}
       {{#?obj.list2}}
       Wrong
-      {{/obj.list2}}
+      {{/?obj.list2}}
     expected: |
       Ok
   - name: Implicit iterator
@@ -113,24 +131,24 @@ tests:
     template: |
       {{#list}}{{#?.}}
       {{&before}}{{#.}}{{.}}{{/.}}{{&after}}
-      {{/.}}{{/list}}
+      {{/?.}}{{/list}}
     expected: |
       -> 123 <-
       -> abc <-
   - name: Non-Sequence
-    desc: Strings don't triger sequence-check section
+    desc: Strings don't trigger sequence-check section
     data: {"x" : "wrong"}
-    template: "{{#?x}}{{x}}{{/x}}"
+    template: "{{#?x}}{{x}}{{/?x}}"
     expected: ""
   - name: Non-Sequence
-    desc: Objects don't triger sequence-check section
+    desc: Objects don't trigger sequence-check section
     data: {"x": {"y": "wrong"}}
-    template: "{{#?x}}{{x.y}}{{/x}}"
+    template: "{{#?x}}{{x.y}}{{/?x}}"
     expected: ""
   - name: Non-Sequence
-    desc: Boolean true don't triger sequence-check section
+    desc: Boolean true don't trigger sequence-check section
     data: { "x": true }
-    template: "{{#?x}}wrong{{/x}}"
+    template: "{{#?x}}wrong{{/?x}}"
     expected: ""
   - name: Whitespace sensitivity
     desc: Sequence check can be in a standalone tag sequence
@@ -138,11 +156,11 @@ tests:
     template: |
       {{#?list}}
       Before
-      {{/list}}{{#list}}
+      {{/?list}}{{#list}}
       - {{.}}
       {{/list}}{{#?list}}
       After
-      {{/list}}
+      {{/?list}}
     expected: |
       Before
       - 1
