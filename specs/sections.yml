@@ -206,6 +206,27 @@ tests:
     template: '"{{#list}}({{#.}}{{.}}{{/.}}){{/list}}"'
     expected: '"(123)(abc)"'
 
+  - name: Implicit Iterator - HTML Escaping
+    desc: Implicit iterators with basic interpolation should be HTML escaped.
+    data:
+      list: [ '&', '"', '<', '>' ]
+    template: '"{{#list}}({{.}}){{/list}}"'
+    expected: '"(&amp;)(&quot;)(&lt;)(&gt;)"'
+
+  - name: Implicit Iterator - Triple mustache
+    desc: Implicit iterators in triple mustache should interpolate without HTML escaping.
+    data:
+      list: [ '&', '"', '<', '>' ]
+    template: '"{{#list}}({{{.}}}){{/list}}"'
+    expected: '"(&)(")(<)(>)"'
+
+  - name: Implicit Iterator - Ampersand
+    desc: Implicit iterators in an Ampersand tag should interpolate without HTML escaping.
+    data:
+      list: [ '&', '"', '<', '>' ]
+    template: '"{{#list}}({{&.}}){{/list}}"'
+    expected: '"(&)(")(<)(>)"'
+
   # Dotted Names
 
   - name: Dotted Names - Truthy
