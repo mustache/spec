@@ -113,7 +113,7 @@ tests:
         clojure: '(fn [text] (if (= text "{{x}}") "yes" "no"))'
         lisp:    '(lambda (text) (if (string= text "{{x}}") "yes" "no"))'
         pwsh:    'if ($args[0] -eq "{{x}}") {"yes"} else {"no"}'
-        go:      'func(text string) string { if text == "{{x}}" { return "yes" } return "no" }'
+        go:      'func(text string) string { if text == "{{x}}" { return "yes" } else { return "no" } }'
     template: "<{{#lambda}}{{x}}{{/lambda}}>"
     expected: "<yes>"
 
