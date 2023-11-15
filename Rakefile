@@ -25,7 +25,10 @@ namespace :build do
 
       File.open(json_file, 'w') do |file|
         warning = {:__ATTN__ => note}
-        doc = YAML.load_file(filename)
+        doc = YAML.load_file(
+            filename,
+            permitted_classes: [TaggedMap]
+        )
         file << JSON.pretty_generate(warning.merge(doc)) << "\n"
       end
     end
