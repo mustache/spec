@@ -197,6 +197,13 @@ tests:
     template: '{{#a}}{{b.c}}{{/a}}'
     expected: ''
 
+  - name: Dotted Names are not valid keys
+    desc: Dotted names shall not be parsed as valid keys
+    data:
+      a.b: c
+    template: '{{a.b}}'
+    expected: ''
+
   # Implicit Iterators
 
   - name: Implicit Iterators - Basic Interpolation
