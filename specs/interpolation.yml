@@ -204,6 +204,14 @@ tests:
     template: '{{a.b}}'
     expected: ''
 
+  - name: Dotted Names - No Masking
+    desc: Dotted Names in a given context are unvavailable due to dot splitting
+    data:
+      a.b: c
+      a: { b: d }
+    template: '{{a.b}}'
+    expected: 'd'
+
   # Implicit Iterators
 
   - name: Implicit Iterators - Basic Interpolation
