@@ -2,9 +2,14 @@ require 'json'
 require 'yaml'
 
 # Our custom YAML tags must retain their magic.
-%w[ code ].each do |tag|
-  YAML::add_builtin_type(tag) { |_,val| val.merge(:__tag__ => tag) }
+class TaggedMap < Hash
+  yaml_tag '!code'
+  def init_with(psych_coder)
+    self.replace({:__tag__ => 'code'}.merge(psych_coder.map))
+  end
 end
+
+YAML::add_tag('code', TaggedMap)
 
 desc 'Build all alternate versions of the specs.'
 multitask :build => [ 'build:json' ]
@@ -19,8 +24,12 @@ namespace :build do
       json_file = filename.gsub('.yml', '.json')
 
       File.open(json_file, 'w') do |file|
-        doc = YAML.load_file(filename)
-        file << doc.merge(:__ATTN__ => note).to_json()
+        warning = {:__ATTN__ => note}
+        doc = YAML.load_file(
+            filename,
+            permitted_classes: [TaggedMap]
+        )
+        file << JSON.pretty_generate(warning.merge(doc)) << "\n"
       end
     end
   end
