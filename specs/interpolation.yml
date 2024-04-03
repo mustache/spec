@@ -195,6 +195,15 @@ tests:
     template: '"{{#a}}{{b.c.d.e.name}}{{/a}}" == "Phil"'
     expected: '"Phil" == "Phil"'
 
+  - name: Dotted Names - Leading Dot
+    desc: A leading dot should force resolution inside the current scope.
+    data:
+      a: { }
+      b: { name: 'Name' }
+      name: 'Fail'
+    template: '{{#a}}{{.name}}{{/a}}{{#b}}{{.name}}{{/b}}'
+    expected: 'Name'
+
   - name: Dotted Names - Context Precedence
     desc: Dotted names should be resolved against former resolutions.
     data:
