@@ -42,9 +42,7 @@ Optional Modules
 ----------------
 
 Specification files beginning with a tilde (`~`) describe optional modules.
-At present, the only module being described as optional is regarding support
-for lambdas.  As a guideline, a module may be a candidate for optionality
-when:
+As a guideline, a module may be a candidate for optionality when:
 
   * It does not affect the core syntax of the language.
   * It does not significantly affect the output of rendered templates.
@@ -54,7 +52,7 @@ when:
     Mustache in the target language.
 
 As an example, the lambda module is primarily concerned with the handling of a
-particular data type (code).  This is a type of data that may be difficult to
+particular data type (code). This is a type of data that may be difficult to
 support in some languages, and users of those languages will not see the lack
 as an 'inconsistency' between implementations.
 
