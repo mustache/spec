@@ -17,7 +17,8 @@
           "clojure": "(fn [] \"world\")",
           "lisp": "(lambda () \"world\")",
           "pwsh": "\"world\"",
-          "go": "func() string { return \"world\" }"
+          "go": "func() string { return \"world\" }",
+          "nix": "v: \"world\""
         }
       },
       "template": "Hello, {{lambda}}!",
@@ -39,7 +40,8 @@
           "clojure": "(fn [] \"{{planet}}\")",
           "lisp": "(lambda () \"{{planet}}\")",
           "pwsh": "\"{{planet}}\"",
-          "go": "func() string { return \"{{planet}}\" }"
+          "go": "func() string { return \"{{planet}}\" }",
+          "nix": "v: \"{{planet}}\""
         }
       },
       "template": "Hello, {{lambda}}!",
@@ -61,7 +63,8 @@
           "clojure": "(fn [] \"|planet| => {{planet}}\")",
           "lisp": "(lambda () \"|planet| => {{planet}}\")",
           "pwsh": "\"|planet| => {{planet}}\"",
-          "go": "func() string { return \"|planet| => {{planet}}\" }"
+          "go": "func() string { return \"|planet| => {{planet}}\" }",
+          "nix": "v: \"|planet| => {{planet}}\""
         }
       },
       "template": "{{= | | =}}\nHello, (|&lambda|)!",
@@ -82,7 +85,8 @@
           "clojure": "(def g (atom 0)) (fn [] (swap! g inc))",
           "lisp": "(let ((g 0)) (lambda () (incf g)))",
           "pwsh": "if (($null -eq $script:calls) -or ($script:calls -ge 3)){$script:calls=0}; ++$script:calls; $script:calls",
-          "go": "func() func() int { g := 0; return func() int { g++; return g } }()"
+          "go": "func() func() int { g := 0; return func() int { g++; return g } }()",
+          "nix": "v: state @ { count ? 1 }: { result = count; state = state // { count = count + 1; }; }"
         }
       },
       "template": "{{lambda}} == {{{lambda}}} == {{lambda}}",
@@ -103,7 +107,8 @@
           "clojure": "(fn [] \">\")",
           "lisp": "(lambda () \">\")",
           "pwsh": "\">\"",
-          "go": "func() string { return \">\" }"
+          "go": "func() string { return \">\" }",
+          "nix": "v: \">\""
         }
       },
       "template": "<{{lambda}}{{{lambda}}}",
@@ -125,7 +130,8 @@
           "clojure": "(fn [text] (if (= text \"{{x}}\") \"yes\" \"no\"))",
           "lisp": "(lambda (text) (if (string= text \"{{x}}\") \"yes\" \"no\"))",
           "pwsh": "if ($args[0] -eq \"{{x}}\") {\"yes\"} else {\"no\"}",
-          "go": "func(text string) string { if text == \"{{x}}\" { return \"yes\" } else { return \"no\" } }"
+          "go": "func(text string) string { if text == \"{{x}}\" { return \"yes\" } else { return \"no\" } }",
+          "nix": "text: if text == \"{{x}}\" then \"yes\" else \"no\""
         }
       },
       "template": "<{{#lambda}}{{x}}{{/lambda}}>",
@@ -147,7 +153,8 @@
           "clojure": "(fn [text] (str text \"{{planet}}\" text))",
           "lisp": "(lambda (text) (format nil \"~a{{planet}}~a\" text text))",
           "pwsh": "\"$($args[0]){{planet}}$($args[0])\"",
-          "go": "func(text string) string { return text + \"{{planet}}\" + text }"
+          "go": "func(text string) string { return text + \"{{planet}}\" + text }",
+          "nix": "text: \"${text}{{planet}}${text}\""
         }
       },
       "template": "<{{#lambda}}-{{/lambda}}>",
@@ -169,7 +176,8 @@
           "clojure": "(fn [text] (str text \"{{planet}} => |planet|\" text))",
           "lisp": "(lambda (text) (format nil \"~a{{planet}} => |planet|~a\" text text))",
           "pwsh": "\"$($args[0]){{planet}} => |planet|$($args[0])\"",
-          "go": "func(text string) string { return text + \"{{planet}} => |planet|\" + text }"
+          "go": "func(text string) string { return text + \"{{planet}} => |planet|\" + text }",
+          "nix": "text: \"${text}{{planet}} => |planet|${text}\""
         }
       },
       "template": "{{= | | =}}<|#lambda|-|/lambda|>",
@@ -190,7 +198,8 @@
           "clojure": "(fn [text] (str \"__\" text \"__\"))",
           "lisp": "(lambda (text) (format nil \"__~a__\" text))",
           "pwsh": "\"__$($args[0])__\"",
-          "go": "func(text string) string { return \"__\" + text + \"__\" }"
+          "go": "func(text string) string { return \"__\" + text + \"__\" }",
+          "nix": "text: \"__${text}__\""
         }
       },
       "template": "{{#lambda}}FILE{{/lambda}} != {{#lambda}}LINE{{/lambda}}",
@@ -212,7 +221,8 @@
           "clojure": "(fn [text] false)",
           "lisp": "(lambda (text) (declare (ignore text)) nil)",
           "pwsh": "$false",
-          "go": "func(text string) bool { return false }"
+          "go": "func(text string) bool { return false }",
+          "nix": "v: false"
         }
       },
       "template": "<{{^lambda}}{{static}}{{/lambda}}>",

@@ -26,6 +26,7 @@ tests:
         lisp:    '(lambda () "world")'
         pwsh:    '"world"'
         go:      'func() string { return "world" }'
+        nix:     'v: "world"'
     template: "Hello, {{lambda}}!"
     expected: "Hello, world!"
 
@@ -44,6 +45,7 @@ tests:
         lisp:    '(lambda () "{{planet}}")'
         pwsh:    '"{{planet}}"'
         go:      'func() string { return "{{planet}}" }'
+        nix:     'v: "{{planet}}"'
     template: "Hello, {{lambda}}!"
     expected: "Hello, world!"
 
@@ -62,6 +64,7 @@ tests:
         lisp:    '(lambda () "|planet| => {{planet}}")'
         pwsh:    '"|planet| => {{planet}}"'
         go:      'func() string { return "|planet| => {{planet}}" }'
+        nix:     'v: "|planet| => {{planet}}"'
     template: "{{= | | =}}\nHello, (|&lambda|)!"
     expected: "Hello, (|planet| => world)!"
 
@@ -79,6 +82,7 @@ tests:
         lisp:    '(let ((g 0)) (lambda () (incf g)))'
         pwsh:    'if (($null -eq $script:calls) -or ($script:calls -ge 3)){$script:calls=0}; ++$script:calls; $script:calls'
         go:      'func() func() int { g := 0; return func() int { g++; return g } }()'
+        nix:     'v: state @ { count ? 1 }: { result = count; state = state // { count = count + 1; }; }'
     template: '{{lambda}} == {{{lambda}}} == {{lambda}}'
     expected: '1 == 2 == 3'
 
@@ -96,6 +100,7 @@ tests:
         lisp:    '(lambda () ">")'
         pwsh:    '">"'
         go:      'func() string { return ">" }'
+        nix:     'v: ">"'
     template: "<{{lambda}}{{{lambda}}}"
     expected: "<&gt;>"
 
@@ -114,6 +119,7 @@ tests:
         lisp:    '(lambda (text) (if (string= text "{{x}}") "yes" "no"))'
         pwsh:    'if ($args[0] -eq "{{x}}") {"yes"} else {"no"}'
         go:      'func(text string) string { if text == "{{x}}" { return "yes" } else { return "no" } }'
+        nix:     'text: if text == "{{x}}" then "yes" else "no"'
     template: "<{{#lambda}}{{x}}{{/lambda}}>"
     expected: "<yes>"
 
@@ -132,6 +138,7 @@ tests:
         lisp:    '(lambda (text) (format nil "~a{{planet}}~a" text text))'
         pwsh:    '"$($args[0]){{planet}}$($args[0])"'
         go:      'func(text string) string { return text + "{{planet}}" + text }'
+        nix:     'text: "${text}{{planet}}${text}"'
     template: "<{{#lambda}}-{{/lambda}}>"
     expected: "<-Earth->"
 
@@ -150,6 +157,7 @@ tests:
         lisp:    '(lambda (text) (format nil "~a{{planet}} => |planet|~a" text text))'
         pwsh:    '"$($args[0]){{planet}} => |planet|$($args[0])"'
         go:      'func(text string) string { return text + "{{planet}} => |planet|" + text }'
+        nix:     'text: "${text}{{planet}} => |planet|${text}"'
     template: "{{= | | =}}<|#lambda|-|/lambda|>"
     expected: "<-{{planet}} => Earth->"
 
@@ -167,6 +175,7 @@ tests:
         lisp:    '(lambda (text) (format nil "__~a__" text))'
         pwsh:    '"__$($args[0])__"'
         go:      'func(text string) string { return "__" + text + "__" }'
+        nix:     'text: "__${text}__"'
     template: '{{#lambda}}FILE{{/lambda}} != {{#lambda}}LINE{{/lambda}}'
     expected: '__FILE__ != __LINE__'
 
@@ -185,5 +194,6 @@ tests:
         lisp:    '(lambda (text) (declare (ignore text)) nil)'
         pwsh:    '$false'
         go:      'func(text string) bool { return false }'
+        nix:     'v: false'
     template: "<{{^lambda}}{{static}}{{/lambda}}>"
     expected: "<>"
