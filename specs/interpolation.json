@@ -20,6 +20,16 @@
       "expected": "Hello, world!\n"
     },
     {
+      "name": "No Re-interpolation",
+      "desc": "Interpolated tag output should not be re-interpolated.",
+      "data": {
+        "template": "{{planet}}",
+        "planet": "Earth"
+      },
+      "template": "{{template}}: {{planet}}",
+      "expected": "{{planet}}: Earth"
+    },
+    {
       "name": "HTML Escaping",
       "desc": "Basic interpolation should be HTML escaped.",
       "data": {
