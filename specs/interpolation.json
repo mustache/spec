@@ -282,6 +282,27 @@
       "expected": ""
     },
     {
+      "name": "Dotted Names are never single keys",
+      "desc": "Dotted names shall not be parsed as single, atomic keys",
+      "data": {
+        "a.b": "c"
+      },
+      "template": "{{a.b}}",
+      "expected": ""
+    },
+    {
+      "name": "Dotted Names - No Masking",
+      "desc": "Dotted Names in a given context are unvavailable due to dot splitting",
+      "data": {
+        "a.b": "c",
+        "a": {
+          "b": "d"
+        }
+      },
+      "template": "{{a.b}}",
+      "expected": "d"
+    },
+    {
       "name": "Implicit Iterators - Basic Interpolation",
       "desc": "Unadorned tags should interpolate content into the template.",
       "data": "world",
