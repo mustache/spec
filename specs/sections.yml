@@ -6,7 +6,7 @@ overview: |
   containing the current closing delimiter; each Section tag MUST be followed
   by an End Section tag with the same content within the same section.
 
-  This tag's content names the data to replace the tag.  Name resolution is as
+  This tag's content names the data to replace the tag.  Name resolution is as
   follows:
     1) If the name is a single period (.), the data is the item currently
     sitting atop the context stack. Skip the rest of these steps.
