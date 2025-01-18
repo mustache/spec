@@ -1,0 +1,168 @@
+overview: |
+  Rationale:
+
+  The core specification of Mustache does not provide a convenient mechanism
+  to emit a header or footer related to an iterable section.
+
+  As this is a very common need, various patterns have emerged to fill the gap.
+  These patterns tends to be either implementation dependent (making changing
+  mustache engines or sharing templates accross applications difficult) or
+  involve adding decoration in the rendered data (requiring ad-hoc logic to
+  alter the data before rendering).
+
+  This optional module provides a standard mechanism to fill the gap.
+
+
+  Proposed mechanism
+
+  The proposed implementation takes inspiration from ~dynamic-names, adding
+  a '?' qualifier after the section sigil for the optional interpretation.
+  
+  ```
+  {{#?list}}
+    <h1>heading</j1>
+    {{#list}}
+      <p>{{item}}</p>
+    {{/list}}
+  {{/?list}}
+  ```
+
+  The new qualified section should not affect the stack and should be
+  rendered for non-empty sequences only, ignored for anything else (the normal
+  section tag already covers the need to test for truthyness on non-sequence
+  types). 
+
+  Callables should be called, and the section rendered if and only if
+  the result is a non-empty list.
+
+  Lambda should NOT be called, and the section should not be rendered.
+  
+
+  Discussion:
+
+  Current view on options
+
+  Approach #1
+    Preprocess data to add a boolean ({{#listNonEmpty}}{{/listNonEmpty}})
+    Pros:
+    - Portable, no template language modifications required
+    Cons:
+    - Convenience: requires coordinated deployment of code and templates
+  Approach #2
+    Host language specific notation ({{#list.0}}{{/list.0}}, {{#list.size}}{{/list.size}}, ...)
+    Pros:
+    - No template language modification required
+    Cons:
+    - Implementation-specific, convenient subkey not always available (ex
+    native environment without scripting capability)
+    - Stacking of tested fields affect resolution (bactktracking required)
+  Approach #3
+    Special purpose sigil ({{?list}}{{/list}})
+    Pros:
+    - Shortest notation in this comparison
+    Cons:
+    - Sacrifices a special character for a very narrow use case
+  Approach #4
+    Power lambdas (#135, {{#nonEmpty.list}}{{/nonEmpty.list}} or similar)
+    Pros:
+    - Powerful language feature that facilitates many use cases at once and does not introduce new special notation
+    Cons:
+    - Not widely implemented
+    - Requires a scripting execution environement
+  Approach %5
+    Current proposal: key modifier ({{#?list}}{{/?list}})
+    Pros:
+    - Short notation, does not sacrifice a sigil, no data preprocessing needed
+    Cons:
+    - Gliding scale: are we going to introduce key modifiers for every narrow use case? Also not widely implemented.
+
+
+  Opened questions:
+
+  This proposition breaks rendering of existing templates where sections
+  refers to symbols starting with '?' that are not used as list indicators.
+  Is it a significant concern or can we ignore this?
+  => one simple option is to require mustache engines have API to activate
+  the feature but it is not really in scope of this specification.
+
+tests:
+  - name: Basic sequence check
+    desc: Non-empty sequence emits the conditional block
+    data:
+      list: [1, 2]
+      heading: "Heading"
+    template: |
+      {{#?list}}
+      {{heading}}
+      {{/?list}}
+    expected: |
+      Heading
+  - name: Basic sequence check
+    desc: Empty sequence does not emit the header
+    data:
+      list: []
+      heading: "Heading"
+    template: |
+      {{#?list}}
+      {{heading}}
+      {{/?list}}
+    expected: ""
+  - name: Basic sequence check
+    desc: Dotted names can be checked
+    data:
+      obj:
+        list1: [1, 2]
+        list2: []
+    template: |
+      {{#?obj.list1}}
+      Ok
+      {{/?obj.list1}}
+      {{#?obj.list2}}
+      Wrong
+      {{/?obj.list2}}
+    expected: |
+      Ok
+  - name: Implicit iterator
+    desc: Implicit iterator can be checked
+    data:
+      list: [[1, 2, 3], [], ['a', 'b', 'c']]
+      before: "-> "
+      after: " <-"
+    template: |
+      {{#list}}{{#?.}}
+      {{&before}}{{#.}}{{.}}{{/.}}{{&after}}
+      {{/?.}}{{/list}}
+    expected: |
+      -> 123 <-
+      -> abc <-
+  - name: Non-Sequence
+    desc: Strings don't trigger sequence-check section
+    data: {"x" : "wrong"}
+    template: "{{#?x}}{{x}}{{/?x}}"
+    expected: ""
+  - name: Non-Sequence
+    desc: Objects don't trigger sequence-check section
+    data: {"x": {"y": "wrong"}}
+    template: "{{#?x}}{{x.y}}{{/?x}}"
+    expected: ""
+  - name: Non-Sequence
+    desc: Boolean true don't trigger sequence-check section
+    data: { "x": true }
+    template: "{{#?x}}wrong{{/?x}}"
+    expected: ""
+  - name: Whitespace sensitivity
+    desc: Sequence check can be in a standalone tag sequence
+    data: {list: [1, 2]}
+    template: |
+      {{#?list}}
+      Before
+      {{/?list}}{{#list}}
+      - {{.}}
+      {{/list}}{{#?list}}
+      After
+      {{/?list}}
+    expected: |
+      Before
+      - 1
+      - 2
+      After
