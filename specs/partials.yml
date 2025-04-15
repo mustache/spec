@@ -87,7 +87,27 @@ tests:
     expected: ">\n  >\n  >"
 
   - name: Standalone Indentation
-    desc: Each new line of the partial should be indented before rendering.
+    desc: Each line of the partial should be indented before rendering.
+    data: { content: "<\n->" }
+    template: |
+      \
+       {{>partial}}
+      /
+    partials:
+      partial: |
+        |
+        {{{content}}}
+        |
+    expected: |
+      \
+       |
+       <
+      ->
+       |
+      /
+
+  - name: Standalone Indentation
+    desc: Indentation should only be applied after each newline in a partial.
     data: { content: "<\n->" }
     template: |
       \
