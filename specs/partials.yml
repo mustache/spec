@@ -106,8 +106,8 @@ tests:
        |
       /
 
-  - name: Standalone Indentation
-    desc: Indentation should only be applied after each newline in a partial.
+  - name: Per line Indentation
+    desc: Indentation should only be applied at the start of each line.
     data: { content: "<\n->" }
     template: |
       \
