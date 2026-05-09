@@ -106,6 +106,27 @@ tests:
        |
       /
 
+  - name: Per line Indentation
+    desc: Indentation should only be applied at the start of each line.
+    data: { content: "<\n->" }
+    template: |
+      \
+       {{>partial}}
+      /
+    partials:
+      partial: |
+        |
+        {{{content}}}a b{{{content}}}c
+        |
+    expected: |
+      \
+       |
+       <
+      ->a b<
+      ->c
+       |
+      /
+
   # Whitespace Insensitivity
 
   - name: Padding Whitespace

@@ -138,6 +138,18 @@
       "expected": "\\\n |\n <\n->\n |\n/\n"
     },
     {
+      "name": "Per line Indentation",
+      "desc": "Indentation should only be applied at the start of each line.",
+      "data": {
+        "content": "<\n->"
+      },
+      "template": "\\\n {{>partial}}\n/\n",
+      "partials": {
+        "partial": "|\n{{{content}}}a b{{{content}}}c\n|\n"
+      },
+      "expected": "\\\n |\n <\n->a b<\n->c\n |\n/\n"
+    },
+    {
       "name": "Padding Whitespace",
       "desc": "Superfluous in-tag whitespace should be ignored.",
       "data": {
