@@ -263,10 +263,11 @@ tests:
       parent: |
         Hi,
           {{$block}}{{/block}}
-    expected: |
+    expected: |-
       Hi,
         one
         two
+
   - name: Block reindentation
     desc: Block indentation is removed at the site of definition and added at the site of expansion
     data: {}
